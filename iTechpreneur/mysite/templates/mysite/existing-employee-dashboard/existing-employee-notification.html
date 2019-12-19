@@ -1,0 +1,170 @@
+{% extends 'mysite/existing-employee-dashboard/existing-employee-main.html' %}
+{% load static %}
+{% block content %}
+        <div class="wrapper-data">
+          <div class="row">
+            <div class="col-12 program-data">
+              
+                <div class="page-sb-title">
+                  <h1 class="hdg">Notifications</h1>
+                </div>
+                {% if  notifications %}
+
+                <div class="post-box">
+                  <div class="table-program">
+                      <div class="table-responsive">
+                        <table class="table table-bordered noti-table">
+                          <thead>
+                              <tr>
+                                <th>Description</th>
+                                <th>Action</th>
+                              </tr>
+                            </thead>
+                          <tbody>
+                          {% for i in notification%}
+                            <tr>
+                              <td>
+                                <div class="noti-icon">
+                                  <i class="fas fa-bell"></i>
+                                  <input type="hidden" class="noti_id" id="noti_id" value="{{ notification.id }}">
+                                  <span>{{ notification.logged_id.first_name }} wants to follow you .</span>
+                                </div>
+                              </td>
+                              <td>
+                                   <button type="button" class="btn btn-sm-dark decline">Delete</button>
+                                   <button type="button" class="btn btn-sm-dark2 accept">Accept</button>
+                              </td>
+                            </tr>
+                            {% endfor %}
+                            {% else %}
+                             <tr>
+                              <td>
+                                <div class="noti-icon">
+                                  <i class="fas fa-bell"> </i>
+                                  <span>  NO NOTIFICATION RIGHT NOW.</span>
+                                </div>
+                              </td>
+                              <td>
+                              </td>
+                            </tr>
+                            {% endif %}
+                          </tbody>
+                        </table>
+                      </div>
+                  </div>
+                </div>
+
+            </div>
+
+          </div>
+
+<!--           <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+            Open modal
+          </button> -->
+
+        </div>
+
+
+
+    </div>
+
+    
+
+
+  </div>
+
+</section>
+
+
+<div class="modal fade theme-popup" id="myModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Modal Heading</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+          Modal body..
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-purple">Yes</button>
+          <button type="button" class="btn btn-yellow">No</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="{% static 'mysite/js/bootstrap.min.js' %}"></script>
+      <script type="text/javascript">
+  $(document).on('click','.accept',function(){
+    // var notification_id = $(this).closest('div').find('.noti_id').val();
+    var notification_id = $('.noti_id').val();
+    console.log(notification_id)
+    $(this).closest("div.notification").hide();
+        $.ajax({
+        url: '/accept-notification/'+ notification_id +'/',
+        type: "GET",
+        dataType: 'json',
+        cache: false,
+        success: function(response){
+         if (response == '0')
+          { 
+            console.log('notification accepted.')
+          }
+           if (response == '1')
+          { 
+            console.log('notification not accepted.')
+          }
+
+        }
+});
+    
+    
+  });
+    
+  </script>
+    <script type="text/javascript">
+  $(document).on('click','.decline',function(){
+    var notification_id = $(this).closest('div').find('.noti_id').val();
+    // var notification_id = $('#noti_id').val();
+    console.log(notification_id)
+
+    $(this).closest("div.notification").hide();
+        $.ajax({
+        url: '/delete-notification/'+ notification_id +'/',
+        type: "GET",
+        dataType: 'json',
+        cache: false,
+        success: function(response){
+         if (response == '0')
+          { 
+            console.log('notification deleted.')
+          }
+           if (response == '1')
+          { 
+            console.log('notification  not deleted.')
+          }
+
+        }
+});
+
+    
+  });
+
+  </script>
+    
+
+</body>
+</html>
+{% endblock %}
+
+

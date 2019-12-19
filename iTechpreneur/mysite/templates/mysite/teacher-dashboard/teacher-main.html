@@ -1,0 +1,79 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Teen TechPreneur</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css">
+  <link rel="stylesheet" href="{% static 'mysite/css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'mysite/css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'mysite/css/dashboard-style.css' %}">
+</head>
+<body>
+
+<section class="layout-main">
+  <div class="sidebar">
+    <div class="sidebar-inner">
+        <div class="logo-bar">
+          <a href="">
+            <img src="{% static 'mysite/images/logo.png' %}" />
+          </a>
+        </div>
+        <div class="menu-bar">
+          <ul class="main-menu">
+            <li class="active">
+              <a href="{% url 'mysite:teacher-dashboard' %}" ><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a>
+            </li>
+            <li>
+              <a href="{% url 'mysite:teacher-profile' %}" ><i class="fas fa-user"></i> <span>Profile</span></a>
+            </li>
+            <li>
+              <a href="{% url 'mysite:teacher-search-future' %}" ><i class="fas fa-graduation-cap"></i> <span>Search Future Student</span></a>
+            </li>
+<!--             <li>
+              <a href="{% url 'mysite:teacher-search-exist' %}" ><i class="fas fa-graduation-cap"></i> <span>Search Existing Student</span></a>
+            </li> -->
+            <li>
+              <a href="{% url 'mysite:teacher-add-post' %}" ><i class="fas fa-edit"></i> <span>Posts</span></a>
+            </li>
+<!--             <li>
+              <a href="#" ><i class="fas fa-envelope"></i> <span>Messaging</span></a>
+            </li> -->
+            <li>
+              <a href="{% url 'mysite:teacher-notification' %}" ><i class="far fa-bell"></i> <span>Notifications</span></a>
+            </li>
+          </ul>
+        </div>
+    </div>
+  </div>
+
+  <div class="content-wrapper">
+    <div class="wrapper-inner">
+        <div class="top-bar">
+          <div class="bar-left">
+              <div class="form-group form-parts mb-0">
+                <!-- <input type="text" class="form-control" placeholder="Search here..."> -->
+              </div>
+          </div>
+
+          <div class="bar-right">
+            <div class="dropdown profile-drop">
+              <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                <div class="for-img">
+                  <img src="{% static 'mysite/images/avatar.png' %}" />
+                </div>
+                <div class="for-des"></div>
+              </button>
+              <div class="dropdown-menu">
+              <a class="dropdown-item" href="{% url 'mysite:logout' %}">Logout</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {% block content %}
+        {% endblock %}
+
+ 

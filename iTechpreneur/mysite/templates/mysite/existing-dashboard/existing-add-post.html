@@ -1,0 +1,175 @@
+{% extends 'mysite/existing-dashboard/existing-main.html' %}
+{% load static %}
+{% block content %}
+        <div class="wrapper-data">
+          <div class="row">
+            <div class="col-12 program-data">
+              <div class="post-box">
+                  <div class="add-program">
+                      <div class="page-title">
+                        <h1 class="hdg">Add New Post</h1>
+                      </div>
+                        <div class="row">
+                            <div class="col-md-6 form-parts m-auto">
+                            <form method="POST" id="existing-post-submit" name="existing-post-submit" action="{% url 'mysite:existing-add-post' %}" enctype="multipart/form-data">{% csrf_token %}
+                                <div class="row">
+                                  <div class="col-md-12 form-parts">
+                                    <div class="form-group">
+                                    <input type="hidden" name="user_id" id="user_id" value="{{ user.id }}">
+                                    <input type="text" class="form-control" id="post_title" onkeyup="function_remove1()" name="post_title" placeholder="Post Title">
+                                    </div>
+                                  </div>
+                                  <div class="col-md-12 form-parts text-parts">
+                                    <div class="form-group">
+                                      <div class="for-upload">
+                                      <textarea class="form-control" id="post_text" onkeyup="function_remove2()" name="post_text" placeholder="Enter your details here..."></textarea>
+                                       <div class="upload-icons">
+                                           <label> <i class="fas fa-upload" id="file_border" ></i> Photo/Video
+                                              <input type="file" id="upload_file" name="upload_file" size="60" onchange="function_remove3()" >
+                                            </label> 
+                                            <center><p id="upload_file_error"></p></center>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <div class="col-md-12 text-right">
+                                      <button type="submit" class="btn btn-yellow" id="existing_add_post_btn">Add</button>
+                                  </div>
+
+                                </div>
+                                
+                              </form>
+
+                            </div>
+                          </div>
+                  </div>
+                </div>
+                {% if teacher_post %}
+                <div class="page-sb-title">
+                  <h1 class="hdg">Post's Added</h1>
+                </div>
+                {% endif %}
+
+                <div class="post-box">
+                  <div class="table-program">
+                      <div class="table-responsive">
+                      {% if teacher_post %}
+                        <table class="table table-bordered fixed-th">
+                          <thead>
+                            <tr>
+                              <th>Post Title</th>
+                              <th>Description</th>
+                              <th>Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                          {% for i in teacher_post %}
+                            <tr>
+                              <td>{{ i.title }}</td>
+                              <td>{{ i.description  }}</td>
+                              <td>
+                                   <button type="button" class="btn btn-sm-dark">Delete</button>
+                                   <button type="button" class="btn btn-sm-dark2">Edit</button>
+                              </td>
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                        {% endif %}
+                      </div>
+                  </div>
+                </div>
+
+            </div>
+
+          </div>
+        </div>
+
+
+
+    </div>
+
+    
+
+
+  </div>
+
+</section>
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="{% static 'mysite/js/bootstrap.min.js' %}"></script>
+  <script type="text/javascript">
+  $("#existing-post-submit").submit(function(e){
+        e.preventDefault();
+        console.log('dddd')
+        if($('#post_title').val())
+        {
+          $('#post_title').removeClass('error_message')
+        }
+        else
+        {
+          $('#post_title').addClass('error_message')
+          return false;
+        }
+
+        if($('#post_text').val())
+        {
+          $('#post_text').removeClass('error_message')
+        }
+        else
+        {
+          $('#post_text').addClass('error_message')
+          return false;
+        }
+
+        if($('#upload_file').val())
+        {
+          $('#upload_file_error').text('')
+        }
+        else
+        {
+         $("#upload_file_error").text('Please upload a file.');
+          document.getElementById("upload_file_error").style.color = "red";   
+          return false;
+        }
+
+        $('#existing-post-submit')[0].submit();
+    });
+</script>
+<script type="text/javascript">
+  function function_remove1(){
+    console.log('dddd')
+        if($('#post_title').val())
+        {
+          $('#post_title').removeClass('error_message')
+        }
+      }
+</script>
+<script type="text/javascript">
+  function function_remove2(){
+    console.log('dddd')
+        if($('#post_text').val())
+        {
+          $('#post_text').removeClass('error_message')
+        }
+      }
+</script>
+<script type="text/javascript">
+  function function_remove3(){
+    console.log('dddd')
+        if($('#upload_file').val())
+        {
+           $('#upload_file_error').text('')
+        }
+      }
+
+</script>
+
+</body>
+</html>
+{% endblock %}
+
+

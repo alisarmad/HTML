@@ -1,0 +1,151 @@
+{% extends 'mysite/existing-dashboard/existing-main.html' %}
+{% load static %}
+{% block content %}
+
+        <div class="wrapper-data">
+          <div class="row">
+            <div class="col-12 program-data">
+              <div class="post-box">
+                  <div class="search-program">
+                      <div class="page-title">
+                        <h1 class="hdg">Search Employers</h1>
+                      </div>
+                      <form>{% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6 form-parts m-auto">
+                              <div class="form-group for-input">
+                                <input type="text" class="form-control" id="search" onkeyup="function_remove1()" placeholder="Search For the Skills/Industry Interest" >
+                                <input type="hidden" class="form-control" id="logged_id" value="{{ user.id }}">
+                                <button type="button" class="btn btn-purple" id="student_employee_search_btn" >Search</button>
+                              </div>
+                            </div>
+                          </div>
+                        </form>
+                  </div>
+                </div>
+
+<!--                  <div class="page-sb-title">
+                    <h1 class="hdg">Search Results</h1>
+                  </div> -->
+                  <div class="col-md-12 pro-data" id="post_data">
+            
+
+                  </div>
+
+
+<!--                   <div class="page-sb-title">
+                    <h1 class="hdg">Already Added</h1>
+                  </div> -->
+
+
+
+
+
+            </div>
+
+          </div>
+        </div>
+
+
+
+    </div>
+
+    
+
+
+  </div>
+
+</section>
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="{% static 'mysite/js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript">
+    function function_remove1(){
+    console.log('dddd')
+        if($('#search').val())
+        {
+          $('#search').removeClass('error_message')
+        }
+      }
+  </script>
+
+  <script type="text/javascript">
+
+$(document).on('click','#student_employee_search_btn',function(e){
+  var search =$('#search').val();
+  var logged_id = $('#logged_id').val();
+   if($('#search').val())
+        {
+          $('#search').removeClass('error_message')
+        }
+        else
+        {
+          $('#search').addClass('error_message')
+          return false;
+        }
+  var token=$('input[name="csrfmiddlewaretoken"]').val()
+
+  console.log("before ajax")
+
+
+  $.ajax({
+    url: '/existing-search/',
+    type: "POST",
+    data: {'search':search,'logged_id':logged_id,'csrfmiddlewaretoken':token },
+    dataType: 'json',
+    cache: false,
+    success: function(response){
+      console.log(response)
+      if (response =='0'){
+        html = '<p>No Result Found</p>'
+        $('#post_data').html(html)
+      }
+      else{
+        html = ""
+        for(var i=0;i<response.length;i++){
+          html+='<div class="post-box"><div class="box-widget"><div class="box-header with-border"><div class="user-block">                              <img class="img-circle" src="/static/mysite/images/avatar.png"><span class="username"><a href="#">'+response[i]['first_name']+' '+response[i]['surname']+'</a></span> </div> </div></div><div class="box-body">Skill:<p>'+response[i]['skills']+'</p></div><div class="box-body">Industry :<p>'+response[i]['industry']+'</p></div><input type="hidden" class="username_id"value="'+response[i]['username_id']+'"/><input type="hidden" class="logged_id" value="'+response[i]['logged_id']+'"/>  <button type="button" class="btn_hide btn btn-sm-dark2">Add</button></div></div>'
+        }
+                   
+        console.log(html)
+        $('#post_data').html(html)
+      }
+    }
+  });
+
+});
+
+  </script>
+  <script type="text/javascript">
+    $(document).on('click','.btn_hide',function(){
+      var username_id = $(this).closest('div').find('.username_id').val();
+      var logged_id = $(this).closest('div').find('.logged_id').val();
+      console.log(username_id)
+      console.log(logged_id)
+
+      $(this).closest("div.post-box").hide();
+      $.ajax({
+        url: '/employee-student-notification/'+ logged_id +'/' + username_id + '/',
+        type: "GET",
+        dataType: 'json',
+        cache: false,
+        success: function(response){
+         if (response == '0')
+          { 
+            console.log('notification created.')
+          }
+           if (response == '1')
+          { 
+            console.log('notification not created.')
+          }
+        }
+});
+});
+  </script>
+</body>
+</html>
+
+{% endblock %}
+
+

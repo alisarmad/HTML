@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Teen TechPreneur</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'mysite/css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'mysite/css/style.css' %}">
+</head>
+<body>
+
+<section class="login-box">
+  <div class="left-part">
+    <div class="left-inner">
+        <div class="top-logo">
+            <a class="" href="#">
+                <img src="{% static 'mysite/images/footer-logo.png' %}">
+            </a>
+        </div>
+        <h1 class="hdg">Forgot your password?</h1>
+        <p class="des">Lorem ipsum dolor sit amet, conse ctetur adipiscing elit. Sed maximus</p>
+        <img class="info-img" src="{% static 'mysite/images/student.png' %}" />
+    </div>
+  </div>
+
+  <div class="right-part">
+    <div class="right-inner forgot-inner">
+        <div class="top-logo">
+            <a class="" href="#">
+                <img src="{% static 'mysite/images/logo.png' %}">
+            </a>
+        </div>
+
+        <div class="signup-form">
+            <form>{% csrf_token %}
+                <div class="row">
+                  <div class="col-md-12 form-parts">
+                    <div class="form-group">
+                      <input type="text" class="form-control" id="username" name="username" placeholder="Email">
+                      <p id="email_error"></p>
+                    </div>
+                  </div>
+
+                </div>
+                <button type="button" class="btn btn-yellow" id="forgot_btn" >Submit</button>
+                <div class="forgot-pass">
+                    <p>New User <a href="/#register">Register</a></p>
+                </div>
+              </form>
+        </div>
+
+    </div>
+  </div>
+</section>
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="{% static 'mysite/js/bootstrap.min.js' %}"></script>
+  <script src="{% static 'mysite/js/forgot.js' %}"></script>
+
+
+</body>
+</html>
+
+

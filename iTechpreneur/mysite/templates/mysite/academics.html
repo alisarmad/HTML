@@ -1,0 +1,176 @@
+{% load static %}
+
+<!---Professor Registration-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Teen TechPreneur</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'mysite/css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'mysite/css/style.css' %}">
+</head>
+<body>
+
+<section class="login-box">
+  <div class="left-part">
+    <div class="left-inner">
+        <div class="top-logo">
+            <a class="" href="#">
+                <img src="{% static 'mysite/images/footer-logo.png' %}">
+            </a>
+        </div>
+        <h1 class="hdg">Register as Teacher/Academics</h1>
+        <p class="des">Lorem ipsum dolor sit amet, conse ctetur adipiscing elit. Sed maximus</p>
+        <img class="info-img" src="{% static 'mysite/images/employer.png' %}" />
+    </div>
+  </div>
+
+  <div class="right-part">
+    <div class="right-inner">
+        <div class="top-logo">
+            <a class="" href="#">
+                <img src="{% static 'mysite/images/logo.png' %}">
+            </a>
+        </div>
+
+        <div class="signup-form">
+            <form role="form" method="POST" action="{% url 'mysite:professor_registration' %}">{% csrf_token %}   
+                <div class="row">
+                  <div class="col-md-6 form-parts">
+                    <div class="form-group">
+                      <input type="text" class="form-control" id="first_name" name="first_name" placeholder="First Name">
+                      <p id="first_name_error"></p>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6 form-parts">
+                    <div class="form-group">
+                      <input type="text" class="form-control" id="surname" name="surname" placeholder="Last Name">
+                      <p id="surname_error"></p>
+                    </div>
+                  </div>
+                </div>
+
+
+                 <div class="row">
+                 <div class="col-md-6 form-parts">
+                    <div class="form-group">
+                    <select class="form-control" id="title" name="title" >
+                    <option value="">Select the Title</option>
+                    {% if title_info %}                      
+                      {% for i in title_info %}
+                          <option value="{{ i.id }}">{{ i.name }}</option>
+                        {% endfor %}
+                      </select>
+                      <p id="title_error"></p>
+                    {% endif %}
+                    </div>
+                  </div>
+
+
+                  <div class="col-md-6 form-parts">
+                    <div class="form-group">
+                      <input type="text" class="form-control" id="email" name="email" placeholder="Email">
+                      <p id="email_error"></p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6 form-parts">
+                    <div class="form-group">
+                      <input type="text" class="form-control" id="university_name" name="university_name" placeholder="University name">
+                      <p id="university_name_error"></p>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6 form-parts">
+                    <div class="form-group">
+                      <input type="email" class="form-control" id="university_address" name="university_address" placeholder="University address">
+                      <p id="university_address_error"></p>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6 form-parts">
+                    <div class="form-group">
+                      <input type="number" class="form-control" id="phone_number" name="phone_number" placeholder="Phone number">
+                      <p id="phone_number_error"></p>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6 form-parts">
+                    <div class="form-group">
+                      <input type="text" class="form-control" id="programme_title" name="programme_title" placeholder="Programme Title">
+                      <p id="programme_title_error"></p>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="row">
+                <div class="col-md-6 form-parts">
+                    <div class="form-group">
+                    <select class="form-control" id="position" name="position">
+                    <option value="">Select the Position</option>
+                    {% if position_info %}  
+                      {% for i in position_info %}
+                          <option value="{{ i.id }}">{{ i.name }}</option>
+                        {% endfor %}
+                      </select>
+                    {% endif %}
+                    <p id="position_error"></p>
+                    </div>
+                  </div>
+
+                <div class="col-md-6 form-parts">
+                    <div class="form-group">
+                    <select class="form-control" id="subject_area" name="subject_area">
+                    <option value="">Select the Subject Area</option>
+                    {% if subject_info %}                      
+                      {% for i in subject_info %}
+                          <option value="{{ i.id }}">{{ i.name }}</option>
+                        {% endfor %}
+                      </select>
+                    {% endif %}
+                    <p id="subject_area_error"></p>
+                    </div>
+                  </div>
+
+                </div>    
+
+                <div class="row">
+                  <div class="col-md-6 form-parts">
+                    <div class="form-group"> 
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+                    <p id="password_error"></p>
+                    </div>
+                  </div>
+                  </div>           
+
+                <button type="button" class="btn btn-yellow" id="student_sign_up_btn">Submit</button>
+                  <div class="forgot-pass">      
+                    <p>Already Registered ? <a href="{% url 'mysite:login' %}">Login Here</a></p>
+                </div>
+              </form>
+             
+        </div>
+
+    </div>
+  </div>
+</section>
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="{% static 'mysite/js/bootstrap.min.js' %}"></script>
+  <script src="{% static 'mysite/js/academics.js' %}"></script>
+
+</body>
+</html>
+
+

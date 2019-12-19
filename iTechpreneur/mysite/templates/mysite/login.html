@@ -1,0 +1,105 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Teen TechPreneur</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'mysite/css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'mysite/css/style.css' %}">
+</head>
+<body>
+
+<section class="login-box">
+  <div class="left-part">
+    <div class="left-inner">
+        <div class="top-logo">
+            <a class="" href="#">
+                <img src="{% static 'mysite/images/footer-logo.png' %}">
+            </a>
+        </div>
+        <h1 class="hdg">Login to your account</h1>
+        <p class="des">Lorem ipsum dolor sit amet, conse ctetur adipiscing elit. Sed maximus</p>
+        <img class="info-img" src="{% static 'mysite/images/student.png' %}" />
+    </div>
+  </div>
+
+  <div class="right-part">
+    <div class="right-inner">
+        <div class="top-logo">
+            <a class="" href="#">
+                <img src="{% static 'mysite/images/logo.png' %}">
+            </a>
+        </div>
+
+        <div class="signup-form">
+            <form>{% csrf_token %}
+                <div class="row">
+                  <div class="col-md-6 form-parts">
+                    <div class="form-group">
+                      <input type="text" class="form-control" id="email" name="email" placeholder="Email">
+                      <p id="email_error"></p>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6 form-parts">
+                    <div class="form-group">
+                      <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+                      <p id="password_error"></p>
+                    </div>
+                  </div>
+                
+                </div>
+
+                <div class="login-as">
+                  <label for="exampleInputEmail1">Login as : </label><br>
+
+                  <div class="form-check-inline">
+                    <label class="form-check-label">
+                      <input type="radio" class="form-check-input" id="user_type" name="user_type" value="student">Student
+                    </label>
+                  </div>
+                  <div class="form-check-inline">
+                    <label class="form-check-label">
+                      <input type="radio" class="form-check-input" id="user_type" name="user_type" value="graduate">Graduate
+                    </label>
+                  </div>
+                  <div class="form-check-inline">
+                    <label class="form-check-label">
+                      <input type="radio" class="form-check-input" id="user_type" name="user_type" value="professor">Professor
+                    </label>
+                  </div>
+                  <div class="form-check-inline">
+                    <label class="form-check-label">
+                      <input type="radio" class="form-check-input" id="user_type" name="user_type" value="employee">Employee
+                    </label>
+                  </div>
+                  <p id="user_type_error"></p>
+                </div>
+
+                <button type="button" class="btn btn-yellow" id="login_btn">Signin</button>
+               
+
+                <div class="forgot-pass">
+                  
+                    <p>Don't have an account? <a href="/#register">Register Here</a></p>
+                    <p><a href="{% url 'mysite:forgot' %}">Forgot Password</a></p>
+                </div>
+              </form>
+        </div>
+
+    </div>
+  </div>
+</section>
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="{% static 'mysite/js/bootstrap.min.js' %}"></script>
+  <script src="{% static 'mysite/js/login.js' %}"></script>
+
+</body>
+</html>
+
+

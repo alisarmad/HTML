@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Teen TechPreneur</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css">
+  <link rel="stylesheet" href="../css/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/dashboard-style.css">
+</head>
+<body>
+
+<section class="layout-main">
+  <div class="sidebar">
+    <div class="sidebar-inner">
+        <div class="logo-bar">
+          <a href="">
+            <img src="images/logo.png" />
+          </a>
+        </div>
+        <div class="menu-bar">
+          <ul class="main-menu">
+            <li>
+              <a href="dashboard.html" ><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a>
+            </li>
+            <li>
+              <a href="future-profile.html" ><i class="fas fa-user"></i> <span>Profile</span></a>
+            </li>
+            <li>
+              <a href="search-program.html" ><i class="fas fa-search"></i> <span>Search Programme</span></a>
+            </li>
+            <li>
+              <a href="add-program.html" ><i class="fas fa-laptop-code"></i> <span>Programmes following</span></a>
+            </li>
+            <li>
+              <a href="add-post.html" ><i class="fas fa-edit"></i> <span>Posts</span></a>
+            </li>
+            <li>
+              <a href="message.html" ><i class="fas fa-envelope"></i> <span>Messaging</span></a>
+            </li>
+            <li class="active">
+              <a href="notification.html" ><i class="far fa-bell"></i> <span>Notifications</span></a>
+            </li>
+          </ul>
+        </div>
+    </div>
+  </div>
+
+  <div class="content-wrapper">
+    <div class="wrapper-inner">
+        <div class="top-bar">
+          <div class="bar-left">
+              <div class="form-group form-parts mb-0">
+                <input type="text" class="form-control" placeholder="Search here...">
+              </div>
+          </div>
+
+          <div class="bar-right">
+            <div class="dropdown profile-drop">
+              <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                <div class="for-img">
+                  <img src="images/avatar.png" />
+                </div>
+                <div class="for-des"></div>
+              </button>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="#">Link 1</a>
+                <a class="dropdown-item" href="#">Link 2</a>
+                <a class="dropdown-item" href="#">Link 3</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="wrapper-data">
+          <div class="row">
+            <div class="col-12 program-data">
+              
+                <div class="page-sb-title">
+                  <h1 class="hdg">Notifications</h1>
+                </div>
+
+                <div class="post-box">
+                  <div class="table-program">
+                      <div class="table-responsive">
+                        <table class="table table-bordered noti-table">
+                          <thead>
+                              <tr>
+                                <th>Description</th>
+                                <th>Action</th>
+                              </tr>
+                            </thead>
+                          <tbody>
+                            <tr>
+                              <td>
+                                <div class="noti-icon">
+                                  <i class="fas fa-bell"></i>
+                                  <span>Lorem Ipsum is simply dummy text of the printing...</span>
+                                </div>
+                              </td>
+                              <td>
+                                   <button type="button" class="btn btn-sm-dark">Delete</button>
+                                   <button type="button" class="btn btn-sm-dark2">Accept</button>
+                              </td>
+                            </tr>
+
+                            <tr>
+                              <td>
+                                <div class="noti-icon">
+                                  <i class="fas fa-bell"></i>
+                                  <span>Lorem Ipsum is simply dummy text of the printing...</span>
+                                </div>
+                              </td>
+                              <td>
+                                   <button type="button" class="btn btn-sm-dark">Delete</button>
+                                   <button type="button" class="btn btn-sm-dark2">Accept</button>
+                              </td>
+                            </tr>
+
+                            <tr>
+                              <td>
+                                <div class="noti-icon">
+                                  <i class="fas fa-bell"></i>
+                                  <span>Lorem Ipsum is simply dummy text of the printing...</span>
+                                </div>
+                              </td>
+                              <td>
+                                   <button type="button" class="btn btn-sm-dark">Delete</button>
+                                   <button type="button" class="btn btn-sm-dark2">Accept</button>
+                              </td>
+                            </tr>
+
+                            <tr>
+                              <td>
+                                <div class="noti-icon">
+                                  <i class="fas fa-bell"></i>
+                                  <span>Lorem Ipsum is simply dummy text of the printing...</span>
+                                </div>
+                              </td>
+                              <td>
+                                   <button type="button" class="btn btn-sm-dark">Delete</button>
+                                   <button type="button" class="btn btn-sm-dark2">Accept</button>
+                              </td>
+                            </tr>
+
+                          </tbody>
+                        </table>
+                      </div>
+                  </div>
+                </div>
+
+            </div>
+
+          </div>
+
+          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+            Open modal
+          </button>
+
+        </div>
+
+
+
+    </div>
+
+    
+
+
+  </div>
+
+</section>
+
+
+<div class="modal fade theme-popup" id="myModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Modal Heading</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+          Modal body..
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-purple">Yes</button>
+          <button type="button" class="btn btn-yellow">No</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="../js/bootstrap.min.js"></script>
+
+</body>
+</html>
+
+

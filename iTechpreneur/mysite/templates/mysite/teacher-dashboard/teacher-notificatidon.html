@@ -1,0 +1,214 @@
+{% extends 'mysite/teacher-dashboard/teacher-main.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Teen TechPreneur</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css">
+  <link rel="stylesheet" href="{% static 'mysite/css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'mysite/css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'mysite/css/dashboard-style.css' %}">
+</head>
+<body>
+
+<section class="layout-main">
+  <div class="sidebar">
+    <div class="sidebar-inner">
+        <div class="logo-bar">
+          <a href="">
+            <img src="{% static 'mysite/images/logo.png' %}" />
+          </a>
+        </div>
+        <div class="menu-bar">
+          <ul class="main-menu">
+            <li>
+              <a href="{% url 'mysite:teacher-dashboard' %}" ><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a>
+            </li>
+            <li>
+              <a href="{% url 'mysite:teacher-profile' %}" ><i class="fas fa-user"></i> <span>Profile</span></a>
+            </li>
+            <li>
+              <a href="{% url 'mysite:teacher-search-future' %}" ><i class="fas fa-graduation-cap"></i> <span>Search Future Student</span></a>
+            </li>
+            <li class="active">
+              <a href="{% url 'mysite:teacher-search-exist' %}" ><i class="fas fa-graduation-cap"></i> <span>Search Existing Student</span></a>
+            </li>
+            <li>
+              <a href="{% url 'mysite:teacher-add-post' %}" ><i class="fas fa-edit"></i> <span>Posts</span></a>
+            </li>
+            <li>
+              <a href="#" ><i class="fas fa-envelope"></i> <span>Messaging</span></a>
+            </li>
+            <li>
+              <a href="{% url 'mysite:teacher-notification' %}" ><i class="far fa-bell"></i> <span>Notifications</span></a>
+            </li>
+          </ul>
+        </div>
+    </div>
+  </div>
+   <div class="content-wrapper">
+    <div class="wrapper-inner">
+        <div class="top-bar">
+          <div class="bar-left">
+              <div class="form-group form-parts mb-0">
+                <input type="text" class="form-control" placeholder="Search here...">
+              </div>
+          </div>
+
+          <div class="bar-right">
+            <div class="dropdown profile-drop">
+              <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                <div class="for-img">
+                  <img src="{% static 'mysite/images/avatar.png' %}" />
+                </div>
+                <div class="for-des"></div>
+              </button>
+              <div class="dropdown-menu">
+              <a class="dropdown-item" href="{% url 'mysite:logout' %}">Logout</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="wrapper-data">
+          <div class="row">
+            <div class="col-12 program-data">
+              <div class="post-box">
+                  <div class="add-program">
+                      <div class="page-title">
+                        <h1 class="hdg">Notifications !!!</h1>
+                      </div>
+                      
+                    
+                  </div>
+                </div>
+                        <div class="row">
+                            <div class="col-md-6 form-parts m-auto notification">
+                            {% if notification %}
+                            <input type="hidden" class="noti_id" id="noti_id" value="{{ notification.id }}">
+                    <p>{{ notification.logged_id.first_name }} wants to follow you .<button type="button" class="btn btn-sm-dark accept">Accept</button>
+                    <button type="button" class="btn btn-sm-dark2 decline">Decline</button></p>
+                            {% endif%}
+                            </div>
+                          </div>
+                {% if teacher_post %}
+                <div class="page-sb-title">
+                  <h1 class="hdg">Post's Added</h1>
+                </div>
+                {% endif %}
+
+                <div class="post-box">
+                  <div class="table-program">
+                      <div class="table-responsive">
+                      {% if teacher_post %}
+                        <table class="table table-bordered fixed-th">
+                          <thead>
+                            <tr>
+                              <th>Post Title</th>
+                              <th>Description</th>
+                              <th>Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                          {% for i in teacher_post %}
+                            <tr>
+                              <td>{{ i.title }}</td>
+                              <td>{{ i.description  }}</td>
+                              <td>
+                                   <button type="button" class="btn btn-sm-dark">Delete</button>
+                                   <button type="button" class="btn btn-sm-dark2">Edit</button>
+                              </td>
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                        {% endif %}
+                      </div>
+                  </div>
+                </div>
+
+            </div>
+
+          </div>
+        </div>
+
+
+
+
+
+
+
+</section>
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="{% static 'mysite/js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript">
+  $(document).on('click','.accept',function(){
+    // var notification_id = $(this).closest('div').find('.noti_id').val();
+    var notification_id = $('.noti_id').val();
+    console.log(notification_id)
+    $(this).closest("div.notification").hide();
+        $.ajax({
+        url: '/accept-notification/'+ notification_id +'/',
+        type: "GET",
+        dataType: 'json',
+        cache: false,
+        success: function(response){
+         if (response == '0')
+          { 
+            console.log('notification accepted.')
+          }
+           if (response == '1')
+          { 
+            console.log('notification not accepted.')
+          }
+
+        }
+});
+    
+    
+  });
+    
+  </script>
+    <script type="text/javascript">
+  $(document).on('click','.decline',function(){
+    // var notification_id = $(this).closest('div').find('.noti_id').val();
+    var notification_id = $('#noti_id').val();
+    console.log(notification_id)
+
+    $(this).closest("div.notification").hide();
+        $.ajax({
+        url: '/delete-notification/'+ notification_id +'/',
+        type: "GET",
+        dataType: 'json',
+        cache: false,
+        success: function(response){
+         if (response == '0')
+          { 
+            console.log('notification deleted.')
+          }
+           if (response == '1')
+          { 
+            console.log('notification  not deleted.')
+          }
+
+        }
+});
+
+    
+  });
+    
+  </script>
+
+</body>
+</html>
+
+{% endblock %}
+
+

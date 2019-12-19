@@ -1,0 +1,128 @@
+{% extends 'mysite/future-dasboard/future-main.html' %}
+{% load static %}
+{% block content %}
+        <div class="wrapper-data">
+          <div class="row">
+            <div class="col-12 left-data">
+              <div class="post-box">
+                  <div class="profile-inner">
+                      <div class="row">
+                        <div class="col-sm-4 profile-left">
+                            <div class="profile-pic">
+                                <img src="{% static 'mysite/images/avatar.png' %}" />
+                                <div class="upload">
+                                  <i class="fas fa-camera"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-sm-8 profile-right">
+                            <div class="profile-edit">
+                                <form>
+                                  <div class="row">
+                                      <div class="col-md-6 form-parts">
+                                        <div class="form-group">
+                                          <label>First Name</label>
+                                          <input type="text" class="form-control" Value="Ajay">
+                                        </div>
+                                      </div>
+
+                                      <div class="col-md-6 form-parts">
+                                        <div class="form-group">
+                                          <label>Last Name</label>
+                                          <input type="text" class="form-control" value="Mathur">
+                                        </div>
+                                      </div>
+
+                                      <div class="col-md-6 form-parts">
+                                        <div class="form-group">
+                                          <label>Email</label>
+                                          <input type="email" class="form-control" value="test@test.com">
+                                        </div>
+                                      </div>
+
+                                      <div class="col-md-6 form-parts">
+                                        <div class="form-group">
+                                          <label>D.O.B.</label>
+                                          <input type="text" class="form-control" value="06-June-1991">
+                                        </div>
+                                      </div>
+
+                                      <div class="col-md-6 form-parts">
+                                        <div class="form-group">
+                                          <label>Preferred Region/Country</label>
+                                          <select class="form-control">
+                                              <option>USA</option>
+                                              <option>USA</option>
+                                              <option>USA</option>
+                                            </select>
+                                        </div>
+                                      </div>
+
+                                      <div class="col-md-6 form-parts">
+                                        <div class="form-group">
+                                          <label>Highest Degree Obtained Of Expected Grades</label>
+                                          <input type="text" class="form-control" Value="Master's">
+                                        </div>
+                                      </div>
+
+                                      <div class="col-md-12 form-parts">
+                                        <div class="form-group">
+                                          <label>Subjects Interested In</label>
+                                          <select class="form-control">
+                                              <option>Physics</option>
+                                              <option selected>English</option>
+                                            </select>
+                                        </div>
+                                      </div>
+
+                                      <div class="col-md-12 form-parts">
+                                        <div class="form-group">
+                                          <label>Address</label>
+                                          <textarea class="form-control" Value="Master's">512 E, 68th Street New York +1452 245</textarea>
+                                        </div>
+                                      </div>
+
+                                       <div class="col-md-12 form-parts">
+                                        <div class="profile-btn">
+                                          <button type="button" class="btn btn-yellow">Cancel</button>
+                                          <button type="button" class="btn btn-purple">Save</button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </form>
+                            </div>
+
+                        </div>
+                      </div>
+                  </div>
+              </div>
+
+
+
+            </div>
+
+          </div>
+        </div>
+
+
+
+    </div>
+
+    
+
+
+  </div>
+
+</section>
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="{% static 'mysite/js/bootstrap.min.js' %}"></script>
+
+</body>
+</html>
+{% endblock %}
+
+

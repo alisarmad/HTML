@@ -1,0 +1,226 @@
+{% extends 'mysite/teacher-dashboard/teacher-main.html' %}
+{% load static %}
+{% block content %}
+        <div class="wrapper-data">
+          <div class="row">
+            <div class="col-12 program-data">
+              <div class="post-box">
+                  <div class="search-program">
+                      <div class="page-title">
+                        <h1 class="hdg">Search future Student</h1>
+                      </div>
+                      <form>{% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6 form-parts m-auto">
+                              <div class="form-group for-input">
+                                <input type="text" class="form-control" id="search" onkeyup="function_remove1()" placeholder="Search For the Subject Interested" >
+                                <input type="hidden" class="form-control" id="logged_id" value="{{ user.id }}">
+                                <button type="button" class="btn btn-purple" id="teacher_future_search_btn">Search</button>
+                              </div>
+                            </div>
+                          </div>
+                        </form>
+                  </div>
+                </div>
+
+                  <div class="search-result">
+                   <div class="row">
+
+                    <div class="col-md-12 pro-data" id="post_data">
+            
+
+                  </div>
+
+
+
+                  <div class="page-sb-title">
+                    <h1 class="hdg">Already Added</h1>
+                  </div>
+
+                  <div class="post-box">
+                  {% if already_added %}
+                    <div class="table-program">
+                        <div class="table-responsive">
+                          <table class="table table-bordered fixed-th2">
+                            <thead>
+                              <tr>
+                                <th>Name</th>
+                                <th>Subject Interested</th>
+                                <th>Action</th>
+                              </tr>
+                            </thead>
+                            {% for i in already_added %}
+                            <tbody>
+                              <tr>
+                                <td>{{ i.first_name }}</td>
+                                <td>{{ i.subject_interested }}</td>
+                                <td>
+                                     <button type="button" class="btn btn-sm-dark unfollow" data-attr="{{ user.id }}"" data-another="{{ i.username }}">Unfollow</button>
+                                </td>
+                              </tr>
+                            </tbody>
+                            {% endfor %}
+                          </table>
+                        </div>
+                    </div>
+                    {% endif %}
+                  </div>
+
+            </div>
+
+          </div>
+        </div>
+
+
+
+    </div>
+
+    
+
+
+  </div>
+
+</section>
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="{% static 'mysite/js/bootstrap.min.js' %}"></script>
+
+  <script type="text/javascript">
+  $(document).on('click','.unfollow',function(){
+    alert('Are you sure to unfollow ?');
+    var teacher_logged_id = $(this).data('attr')
+    var future_to_be_unfollowed_id = $(this).data('another')
+    // var future_logged_id = $(this).parent().find('div').find('input.future_logged_id').val();
+    // var teacher_to_be_unfollowed_id = $(this).closest('div').find('.teacher_to_be_unfollowed_id').val();
+    console.log(teacher_logged_id)
+    console.log(future_to_be_unfollowed_id)
+    $(this).closest("tr").hide();
+        $.ajax({
+        url: '/future_teacher_unfollow/'+ teacher_logged_id +'/' + future_to_be_unfollowed_id +'/' ,
+        type: "GET",
+        dataType: 'json',
+        cache: false,
+        success: function(response){
+         if (response == '1')
+          { 
+            console.log('unfollow process not completed.')
+          }
+           if (response == '0')
+          { 
+            console.log('unfollow process completed.')
+          }
+
+        }
+  });
+  });
+    
+  </script>
+
+    <script type="text/javascript">
+    function function_remove1(){
+    console.log('dddd')
+        if($('#search').val())
+        {
+          $('#search').removeClass('error_message')
+        }
+      }
+  </script>
+
+  <script type="text/javascript">
+
+$(document).on('click','#teacher_future_search_btn',function(e){
+  var search =$('#search').val();
+  var logged_id = $('#logged_id').val();
+   if($('#search').val())
+        {
+          $('#search').removeClass('error_message')
+        }
+        else
+        {
+          $('#search').addClass('error_message')
+          return false;
+        }
+  var token=$('input[name="csrfmiddlewaretoken"]').val()
+
+  console.log("before ajax")
+
+
+  $.ajax({
+    url: '/teacher-search-future/',
+    type: "POST",
+    data: {'search':search,'logged_id':logged_id,'csrfmiddlewaretoken':token },
+    dataType: 'json',
+    cache: false,
+    success: function(response){
+
+      if (response =='0'){
+        html = '<p>No Result Found</p>'
+        $('#post_data').html(html)
+      }
+      else{
+        html = ""
+        for(var i=0;i<response.length;i++){
+          html+='<div class="post-box"><div class="box-widget"><div class="box-header with-border"><div class="user-block">                              <img class="img-circle" src="/static/mysite/images/avatar.png"><span class="username"><a href="#">'+response[i]['first_name']+' '+response[i]['surname']+'</a></span> </div> </div></div><div class="box-body"><p>'+response[i]['subject_interested']+'</p><input type="hidden" class="username_id"value="'+response[i]['username_id']+'"/><input type="hidden" class="logged_id" value="'+response[i]['logged_id']+'"/>  <button type="button" class="btn_hide btn btn-sm-dark2" data-logged="'+response[i]['logged_id']+'" data-username="'+response[i]['username_id']+'">Add</button></div></div>'
+        }
+                   
+        console.log(html)
+        $('#post_data').html(html)
+      }
+      // var a = JSON.parse(response)
+      // console.log(a)
+     // if(response=='1')
+     //  {
+     //    alert("Result found.");
+     //  }
+     //  else
+     //  {
+        // if(response=='0')
+        // {
+        //   alert('Result not found.');
+        //   return false;
+        // }       
+     //  }
+    }
+  });
+
+});
+
+  </script>
+  <script type="text/javascript">
+    $(document).on('click','.btn_hide',function(){
+      // var username_id = $(this).closest('div').find('.username_id').val();
+      // var logged_id = $(this).closest('div').find('.logged_id').val();
+      var username_id = $(this).data('username')
+      var logged_id = $(this).data('logged')
+      console.log(username_id)
+      console.log(logged_id)
+
+      $(this).closest("div.post-box").hide();
+      $.ajax({
+        url: '/future_teacher_create_notification/'+ logged_id +'/' + username_id + '/',
+        type: "GET",
+        dataType: 'json',
+        cache: false,
+        success: function(response){
+         if (response == '0')
+          { 
+            console.log('notification created.')
+          }
+           if (response == '1')
+          { 
+            console.log('notification not created.')
+          }
+
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
+
+{% endblock %}
+
+

@@ -1,0 +1,99 @@
+{% extends 'mysite/teacher-dashboard/teacher-main.html' %}
+{% load static %}
+{% block content %}
+        <div class="wrapper-data">
+          <div class="row">
+            <div class="col-12 left-data">
+              <div class="post-box">
+                  <div class="profile-inner">
+                      <div class="row">
+                        <div class="col-sm-4 profile-left">
+                            <div class="profile-pic">
+                                <img src="{% static 'mysite/images/avatar.png' %}" />
+                                <!-- <div class="upload">
+                                  <i class="fas fa-camera"></i>
+                                </div> -->
+                            </div>
+                        </div>
+                        {% if user_info %}
+                        <div class="col-sm-8 profile-right">
+                            <div class="name-dtl">
+                              <h1 class="name">{{ user_info.first_name }}  {{ user_info.surname }}</h1>
+                              <p class="place">Academics</p>
+                              <!-- <a href="{% url 'mysite:teacher-edit-post' %}" class="btn btn-sm-dark"><i class="fas fa-edit"></i> Edit</a> -->
+                            </div>
+
+                            <div class="contact-dtl">
+                              <h1 class="hdg">contact information</h1>
+                              
+                              <div class="row">
+                                <div class="col-5 left-name">Email: </div>
+                                <div class="col-7 rgt-dtl">{{ user_info.email }}</div>
+                              </div>
+
+                              <div class="row">
+                                <div class="col-5 left-name">Title</div>
+                                <div class="col-7 rgt-dtl">
+                                    <p>{{ user_info.title }}</p>
+                                </div>
+                              </div>
+
+              
+
+                              <div class="row">
+                                <div class="col-5 left-name">University Name</div>
+                                <div class="col-7 rgt-dtl"><p>{{ user_info.university_name }}</p></div>
+                              </div>
+
+                               <div class="row">
+                                <div class="col-5 left-name">University Address</div>
+                                <div class="col-7 rgt-dtl"><p>{{ user_info.university_address }}</p></div>
+                              </div>
+
+                              <div class="row">
+                                <div class="col-5 left-name">Program Title</div>
+                                <div class="col-7 rgt-dtl"><p>{{ user_info.programme_title }}</p></div>
+                              </div>
+
+                              <div class="row">
+                                <div class="col-5 left-name">Position</div>
+                                <div class="col-7 rgt-dtl"><p>{{ user_info.position }}</p></div>
+                              </div>
+
+                            </div>
+
+                        </div>
+                        {% endif %}
+                      </div>
+                  </div>
+              </div>
+
+
+
+            </div>
+
+          </div>
+        </div>
+
+
+
+    </div>
+
+    
+
+
+  </div>
+
+</section>
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="{% static 'mysite/js/bootstrap.min.js' %}"></script>
+
+</body>
+</html>
+
+{% endblock %}
+
+

@@ -1,0 +1,109 @@
+{% extends 'mysite/employee-dashboard/employee-main.html' %}
+{% load static %}
+{% block content %}
+        <div class="wrapper-data">
+          <div class="row">
+            <div class="col-12 program-data">
+        
+
+                <div class="page-sb-title">
+                  <h1 class="hdg">Existing Student Following :</h1>
+                </div>
+
+                <div class="post-box">
+                  <div class="table-program">
+                      <div class="table-responsive">
+                        <table class="table table-bordered fixed-th2">
+                          <thead>
+                          {% if already_added %}
+                            <tr>
+                              <th>Name</th>
+                              <th>Industry</th>
+                               <th>Skills</th>
+                              <th>Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                          {% for i in already_added %}
+                            <tr>
+                             <!--  <td><img class="post-icon" src="{% static 'mysite/images/avatar.png' %}"></td> -->
+                              <td>{{ i.first_name }}</td>
+                              <td>{{ i.industry }}</td>
+                              <td>{{ i.skills }}</td>
+                              
+                              <td>
+                                  <div class="unfollowed">
+                                    <input type="hidden" class=".future_logged_id" value="{{ user.id }}">
+                                    <input type="hidden" class=".teacher_to_be_unfollowed_id" value="{{ i.username_id }}">
+                                  </div>
+                                   <button type="button" class="btn btn-sm-dark unfollow" data-logged="{{ user.id }}"" data-unlogged="{{ i.username_id }}">Unfollow</button>
+                              </td>
+                            </tr>
+                            {% endfor %}
+                            {% else %}
+                            <tr>
+                              <td>NOT FOLLOWING ANY STUDENT.</td>
+                            </tr>
+                            {% endif %}
+
+                          </tbody>
+                        </table>
+                      </div>
+                  </div>
+                </div>
+
+            </div>
+
+          </div>
+        </div>
+
+
+
+  </div>
+
+    
+
+
+  </div>
+
+</section>
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="{% static 'mysite/js/bootstrap.min.js' %}"></script>
+        <script type="text/javascript">
+  $(document).on('click','.unfollow',function(){
+    alert('Are you sure to unfollow ?');
+    var logged_id = $(this).data('logged')
+    var unlogged_id = $(this).data('unlogged')
+    // var future_logged_id = $(this).parent().find('div').find('input.future_logged_id').val();
+    // var teacher_to_be_unfollowed_id = $(this).closest('div').find('.teacher_to_be_unfollowed_id').val();
+    console.log(logged_id)
+    console.log(unlogged_id)
+    $(this).closest("tr").hide();
+        $.ajax({
+        url: '/student_employee_unfollow_notification/'+ logged_id +'/' + unlogged_id +'/' ,
+        type: "GET",
+        dataType: 'json',
+        cache: false,
+        success: function(response){
+         if (response == '1')
+          { 
+            console.log('unfollow process not completed.')
+          }
+           if (response == '0')
+          { 
+            console.log('unfollow processcompleted.')
+          }
+
+        }
+  });
+  });
+    
+  </script>
+
+
+</body>
+</html>
+{% endblock %}
