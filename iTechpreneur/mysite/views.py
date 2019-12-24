@@ -23,7 +23,7 @@ class Home(TemplateView):
 	template_name=('mysite/index.html')
 
 ###########################Future##########################################
-
+#Graduate dashboard
 class FutureDashboard(TemplateView):
 	template_name=('mysite/future-dasboard/future-dashboard.html')
 	def get_context_data(self, *args, **kwargs):
@@ -31,31 +31,80 @@ class FutureDashboard(TemplateView):
 		print('user_id:',self.request.session['_auth_user_id'])
 		user_id = int(self.request.session['_auth_user_id'])
 		response_list=[]
-		obj1 = Future_student_post.objects.filter(future_student_user_id_id=user_id)
-		ids = list(FutureTeacherMapping.objects.filter(future_student_user_id_id=int(user_id)).values_list('connected_teacher_id',flat=True))
-		if ids:
-			for i in ids:
-				obj = Teacher_post.objects.filter(teacher_user_id_id=int(i)).first()
-				if obj:
-					context1={}
-					context1['user_name'] = obj.teacher_user_id.first_name
-					context1['title'] = obj.title
-					context1['description'] = obj.description
-					context1['file'] = obj.file.name
-					context1['time_stamp'] = obj.time_stamp
-					response_list.append(context1)
+		obj = Graduate.objects.filter(username_id = int(user_id)).first()
+		print("Graduate obj",obj)
+		if obj:
+			graduate_objects = Graduate.objects.filter(country = obj.country, technical_subject = obj.technical_subject)
+			students_objects = Students.objects.filter(country = obj.country, technical_subject = obj.technical_subject)
+			professor_objects = Professor.objects.filter(country = obj.country, technical_subject = obj.technical_subject)
+			employee_objects = Employeeee.objects.filter(country = obj.country, technical_subject = obj.technical_subject)
+			if graduate_objects:
+				for i in graduate_objects:
+					posts = Future_student_post.objects.filter(future_student_id = i.id)
+					print("posts :", posts)
+					k=0
+					if posts:
+						for j in posts:
+							k = k+1
+							context1 = {}
+							context1['user_name'] = j.future_student_user_id.first_name
+							context1['title'] = j.title
+							context1['description'] = j.description
+							context1['file'] = j.file.name
+							context1['time_stamp'] =j.time_stamp
+							response_list.append(context1)
+						print("response list : graduate ", response_list)
+						print("k :", k)
+			if employee_objects:
+				print("employee objects :",employee_objects)
+				for i in employee_objects:
+					posts = Employee_post.objects.filter(employee_id = i.id)
+					print("posts :", posts)
+					if posts:
+						for j in posts:
+							context4 = {}
+							context4['user_name']= j.employee_user_id.first_name
+							context4['title']= j.title
+							context4['description']= j.description
+							context4['file']=j.file.name
+							context4['time_stamp']= j.time_stamp
+							response_list.append(context4)
+						
 
-		if obj1:
-			for j in obj1:
-				context1={}
-				context1['user_name'] = j.future_student_user_id.first_name
-				context1['title'] = j.title
-				context1['description'] = j.description
-				context1['file'] = j.file.name
-				context1['time_stamp'] = j.time_stamp
+			if professor_objects:
+				for i in professor_objects:
+					posts = Teacher_post.objects.filter(teacher_id = i.id)
+					if posts:
+						for j in posts:
+							context3 = {}
+							context3['user_name'] = j.teacher_user_id.first_name
+							context3['title'] = j.title
+							context3['description'] = j.description
+							context3['file']= j.file.name
+							context3['time_stamp'] = j.time_stamp
+							response_list.append(context3)
 
-			response_list.append(context1)
-			print('before:',response_list)
+			if students_objects:
+				print("students objects: ", students_objects)
+				print("got students data successfully")
+				for i in students_objects:
+					print("student id: ",i.id)
+					posts = Existing_student_post.objects.filter(student_id = i.id)
+					if posts:
+						print("posts",posts)
+						for j in posts:
+							context2={}
+							context2['user_name'] = j.student_user_id.first_name
+							context2['title'] = j.title
+							context2['description'] = j.description
+							context2['file'] = j.file.name
+							context2['time_stamp'] = j.time_stamp
+							response_list.append(context2)
+						print("students post have showed")
+						print("got posts from students table")
+			else:
+				print("there is no data related to students")
+		
 
 			response_list = sorted(response_list, key=lambda k: k['time_stamp'], reverse=True)
 
@@ -164,7 +213,7 @@ class FutureTeacherFollowing(TemplateView):
 
 class FutureAddPost(TemplateView):
 	template_name=('mysite/future-dasboard/future-add-post.html')
-
+	
 	def get_context_data(self, *args, **kwargs):
 		context = super(FutureAddPost, self).get_context_data(*args, **kwargs)
 		print('user_id:',self.request.session['_auth_user_id'])
@@ -184,11 +233,12 @@ class FutureAddPost(TemplateView):
 		description = request.POST.get('post_text')
 		user_id = request.POST.get('user_id')
 		file = request.FILES.get('upload_file')
-		obj = Future_Student.objects.filter(username_id=int(user_id)).first()
-		future_student_id = int(obj.id)
-		future_student_user_id = int(user_id)
-		obj1 = Future_student_post.objects.create(title=title,description=description,file=file,future_student_id_id=future_student_id,future_student_user_id_id=future_student_user_id)
-		obj1.save()
+		
+		g_id = Graduate.objects.filter(username_id=int(user_id)).first()
+		graduate_id = int(g_id.id)
+		print("graduate id: ",graduate_id)
+		obj = Future_student_post.objects.create(future_student_id_id = graduate_id,future_student_user_id_id=user_id, title = title, description =description,file= file)
+		obj.save()
 		print('future post saved.')
 		context={}
 		# obj = Future_Student.objects.filter(username_id=user_id)
@@ -209,7 +259,8 @@ class FutureAddPost(TemplateView):
 					context1['file'] = k.file.name
 					context1['time_stamp'] = k.time_stamp
 					response_list.append(context1)
-
+		
+		print(obj1)
 		if obj1:
 			for j in obj1:
 				context1={}
@@ -641,7 +692,8 @@ class TeacherAddPost(TemplateView):
 		description = request.POST.get('post_text')
 		user_id = request.POST.get('user_id')
 		file = request.FILES.get('upload_file')
-		obj = Teacher.objects.filter(username_id=int(user_id)).first()
+		obj = Professor.objects.filter(username_id=int(user_id)).first()
+		print("Teacher object",obj)
 		teacher_id = int(obj.id)
 		teacher_user_id = int(user_id)
 		obj1 = Teacher_post.objects.create(title=title,description=description,file=file,teacher_id_id=teacher_id,teacher_user_id_id=teacher_user_id)
@@ -745,36 +797,76 @@ class ExistingStudentDashboard(TemplateView):
 		context = super(ExistingStudentDashboard, self).get_context_data(*args, **kwargs)
 		print('user_id:',self.request.session['_auth_user_id'])
 		user_id = int(self.request.session['_auth_user_id'])
+		print("user id on dashboard :" , user_id)
 		response_list = []
-		obj = Existing_student_post.objects.filter(student_user_id_id=int(user_id))
-		obj1 = StudentEmployeeMapping.objects.filter(student_user_id_id=int(user_id)).values_list('connected_employee_user_id_id',flat=True)
-		if obj1:
-			for i in obj1:
-				objj = Employee_post.objects.filter(employee_user_id_id=int(i))
-				if objj:
-					for k in objj:
-						context1 ={}
-						context1['user_name'] = k.employee_user_id.first_name
-						context1['title'] = k.title
-						context1['description'] = k.description
-						context1['file'] = k.file.name
-						context1['time_stamp'] = k.time_stamp
-
-						response_list.append(context1)
-
-
+		#retrieve logged in student country and technical subject from database 
+		obj = Students.objects.filter(username_id=int(user_id)).first()
 		if obj:
-			for j in obj:
-				context1 ={}
-				context1['user_name'] = j.student_user_id.first_name
-				context1['title'] = j.title
-				context1['description'] = j.description
-				context1['file'] = j.file.name
-				context1['time_stamp'] = j.time_stamp
+			student_objects = Students.objects.filter(country = obj.country, technical_subject=obj.technical_subject)
+			graduate_objects = Graduate.objects.filter(country=obj.country, technical_subject=obj.technical_subject)
+			professor_objects = Professor.objects.filter(country = obj.country, technical_subject = obj.technical_subject)
+			employee_objects  = Employeeee.objects.filter(country = obj.country, technical_subject = obj.technical_subject)
+			if student_objects:
+				for i in student_objects:
+					posts = Existing_student_post.objects.filter(student_user_id = i.id)
+					if posts:
+						for j in posts:
+							context1 = {}
+							context1['user_name'] = j.student_user_id.first_name
+							context1['title'] = j.title
+							context1['description'] = j.description
+							context1['file']= j.file.name
+							context1['time_stamp'] = j.time_stamp
+							response_list.append(context1)
+			if graduate_objects:
+				print("got graduate record")
+				for i in graduate_objects:
+					posts = Future_student_post.objects.filter(future_student_id = i.id)
+					if posts:
+						for j in posts:
+							context4 = {}
+							context4['user_name']= j.future_student_user_id.first_name
+							context4['title'] = j.title
+							context4['description'] = j.description
+							context4['file']=j.file.name
+							context4['time_stamp']=j.time_stamp
+							response_list.append(context4)
 
-				response_list.append(context1)
-			print('before:',response_list)
-
+						print("it has posts")
+					else:
+						print("does not have posts")
+			if professor_objects:
+				for i in professor_objects:
+					posts = Teacher_post.objects.filter(teacher_id = i.id)
+					if posts:
+						for j in posts:
+							context3 = {}
+							context3['user_name']= j.teacher_user_id.first_name
+							context3['title']= j.title
+							context3['description'] = j.description
+							context3['file'] = j.file.name
+							context3['time_stamp'] = j.time_stamp
+							response_list.append(context3)
+			if employee_objects:
+				for i in employee_objects:
+					posts = Employee_post.objects.filter(employee_id = i.id)
+					if posts:
+						for j in posts:
+							context2 = {}
+							context2['user_name'] = j.employee_user_id.first_name
+							context2['title'] = j.title
+							context2['description'] = j.description
+							context2['file'] = j.file.name	
+							context2['time_stamp'] = j.time_stamp
+							response_list.append(context2)		
+			else:
+				print("could not get graduate record")
+			print(obj.country)
+			print(obj.technical_subject)
+			print("this is student object")
+		else:
+			print("empty object")
+	
 			response_list = sorted(response_list, key=lambda k: k['time_stamp'], reverse=True)
 
 			print('\n\n\n\n\n')
@@ -802,8 +894,8 @@ class ExistingStudentAddPost(TemplateView):
 		file = request.FILES['upload_file']
 		user_id = int(self.request.session['_auth_user_id'])
 		ss_id = Students.objects.filter(username_id=int(user_id)).first()
-		student_id = int(ss_id.id)
-		obj = Existing_student_post.objects.create(student_user_id_id=int(user_id),student_id_id=int(student_id),title=title,description=description,file=file)
+		print("student",ss_id.id)
+		obj = Existing_student_post.objects.create(student_id_id=ss_id.id,student_user_id_id=user_id,title=title,description=description,file=file)
 		obj.save()
 		print('existing student post saved.')
 		context={}
@@ -856,7 +948,9 @@ class ExistingStudentProfile(TemplateView):
 		print('user_id:',self.request.session['_auth_user_id'])
 		user_id = int(self.request.session['_auth_user_id'])
 		obj = Students.objects.filter(username_id=user_id).first()
+		
 		if obj:
+			print("this obj has record")
 			context['user_info'] = obj
 		return context
 
@@ -1081,20 +1175,7 @@ class EmployeeDashboard(TemplateView):
 		user_id = int(self.request.session['_auth_user_id'])
 		response_list = []
 		obj = Employee_post.objects.filter(employee_user_id_id=int(user_id))
-		obj1 = EmployeeStudentMapping.objects.filter(employee_user_id_id=int(user_id)).values_list('connected_student_user_id_id',flat=True)
-		if obj1:
-			for i in obj1:
-				objj = Existing_student_post.objects.filter(student_user_id_id=int(i))
-				if objj:
-					for k in objj:
-						context1 ={}
-						context1['user_name'] = k.student_user_id.first_name
-						context1['title'] = k.title
-						context1['description'] = k.description
-						context1['file'] = k.file.name
-						context1['time_stamp'] = k.time_stamp
-
-						response_list.append(context1)
+	
 
 
 		if obj:
@@ -1146,29 +1227,19 @@ class EmployeeAddPost(TemplateView):
 		description = request.POST.get('post_text')
 		file = request.FILES['upload_file']
 		user_id = int(self.request.session['_auth_user_id'])
-		ee_id = User_Info.objects.filter(username_id=int(user_id)).first()
+		print("user Id: ", user_id)
+		ee_id = Employeeee.objects.filter(username_id=int(user_id)).first()
+		print("ee_id :", ee_id)
 		employee_id = int(ee_id.id)
-		obj = Employee_post.objects.create(employee_user_id_id=int(user_id),employee_id_id=int(employee_id),title=title,description=description,file=file)
+		print("employee id", employee_id)
+		obj = Employee_post.objects.create(employee_id_id=employee_id,employee_user_id_id=user_id,title=title,description=description,file=file)
 		obj.save()
 		print('employee post saved.')
 		context={}
 		user_id = int(self.request.session['_auth_user_id'])
 		response_list = []
 		obj = Employee_post.objects.filter(employee_user_id_id=int(user_id))
-		obj1 = EmployeeStudentMapping.objects.filter(employee_user_id_id=int(user_id)).values_list('connected_student_user_id_id',flat=True)
-		if obj1:
-			for i in obj1:
-				objj = Existing_student_post.objects.filter(student_user_id_id=int(i))
-				if objj:
-					for k in objj:
-						context1 ={}
-						context1['user_name'] = k.student_user_id.first_name
-						context1['title'] = k.title
-						context1['description'] = k.description
-						context1['file'] = k.file.name
-						context1['time_stamp'] = k.time_stamp
-
-						response_list.append(context1)
+		
 
 
 		if obj:
@@ -1998,6 +2069,7 @@ class Login(TemplateView):
 		print('password:',password)
 		print('user_type:',user_type)
 		user = authenticate(username=username, password=password)
+		print("user id: ",user.id)
 		if user:
 			if user.is_superuser == True:
 				return HttpResponse('0')

@@ -5,9 +5,9 @@
           <div class="row">
           {% if all_posts %}
         
-          
+          {% for i in all_posts %}
             <div class="col-8 left-data">
-             {% for i in all_posts %}
+            
               <div class="post-box">
                 <div class="box-widget">
                   <div class="box-header with-border">
@@ -28,11 +28,7 @@
               </div>
 
             </div>
-            {% endfor %}
-            {% else %}
-                <p>No Posts Right Now.</p>
-                {% endif %}
-
+           
 
 
 
@@ -118,6 +114,10 @@
 
 
             </div>
+            {% endfor %}
+            {% else %}
+                <p>No Posts Right Now.</p>
+                {% endif %}
 
           </div>
         </div>

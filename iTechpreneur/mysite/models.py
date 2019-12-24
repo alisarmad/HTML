@@ -270,9 +270,9 @@ class Teacher_post(models.Model):
 	description = models.TextField(blank=True, null=True)
 	file = models.FileField(blank=True, null=True)
 	time_stamp = models.DateTimeField(auto_now=True)
-
+#this is used to upload posts on Graduate students
 class Future_student_post(models.Model):
-	future_student_id = models.ForeignKey(Future_Student,on_delete=models.CASCADE)
+	future_student_id = models.ForeignKey(Graduate,on_delete=models.CASCADE)
 	future_student_user_id = models.ForeignKey(User,on_delete=models.CASCADE)
 	title = models.CharField(max_length=200)
 	description = models.TextField(blank=True, null=True)
@@ -288,7 +288,7 @@ class Existing_student_post(models.Model):
 	time_stamp = models.DateTimeField(auto_now=True)
 
 class Employee_post(models.Model):
-	employee_id = models.ForeignKey(User_Info,on_delete=models.CASCADE)
+	employee_id = models.ForeignKey(Employeeee,on_delete=models.CASCADE)
 	employee_user_id = models.ForeignKey(User,on_delete=models.CASCADE)
 	title = models.CharField(max_length=200,null=True)
 	description = models.TextField(blank=True, null=True)

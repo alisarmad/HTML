@@ -1,38 +1,49 @@
 {% extends 'mysite/existing-dashboard/existing-main.html' %}
 {% load static %}
 {% block content %}
-              <div class="wrapper-data">
-          <div class="row">
-          {% if all_posts %}
-        
-          
-            <div class="col-8 left-data">
-            {% for i in all_posts %}
-             
-              <div class="post-box">
-                <div class="box-widget">
-                  <div class="box-header with-border">
-                    <div class="user-block">
-                      <img class="img-circle" src="{% static 'mysite/images/avatar.png' %}">
-                      
-                      <span class="username"><a href="#">{{ i.user_name }}</a></span>
-                      <span class="description">Shared at -  {{ i.time_stamp }}</span>
-                    </div>
-                  </div>
-                </div>
-                <p>Title:  {{ i.title }}</p>
-                <div class="box-body">
-                {% if i.file %}
-                  <img class="img-fluid pad" src="/media/{{ i.file }}" alt="Photo">
-                {% endif %}                  
-                  <p>Description: {{ i.description }}</p>
-              </div>
+{% if all_posts %}
+<div class="wrapper-data">
+  <div class="row">
 
+    {% for i in all_posts %}
+    <div class="col-8 left-data">
+      <div class="post-box">
+        <div class="box-widget">
+          <div class="box-header with-border">
+            <div class="user-block">
+              <img class="img-circle" src="{% static 'mysite/images/avatar.png' %}">
+              <span class="username"><a href="#">{{ i.user_name }}</a></span>
+              <span class="description">Shared at - {{ i.time_stamp }}</span>
             </div>
-            {% endfor %}
-            {% else %}
-                <p>No Posts Right Now.</p>
-                {% endif %}
+          </div>
+        </div>
+        <p>Title: {{ i.title }}</p>
+        <div class="box-body">
+          {% if i.file %}
+          <img class="img-fluid pad" src="/media/{{ i.file }}" alt="Photo">
+          {% endif %}
+          <p>Description: {{ i.description }}</p>
+        </div>
+
+      </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <p>No Posts Right Now.</p>
+    {% endif %}
+  </div>
+</div>
+  
+</div>
+    
+   
+
+  </div>
+</div>
+</div>
+</div>
+
+</section>
 
 
 
@@ -118,30 +129,13 @@
 
 
 
-            </div>
-
-          </div>
-        </div>
 
 
-
-    </div>
-
-    
-
-
-  </div>
-
-</section>
-
-
-
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-  <script src="{% static 'mysite/js/bootstrap.min.js' %}"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="{% static 'mysite/js/bootstrap.min.js' %}"></script>
 
 </body>
+
 </html>
 {% endblock %}
-
-

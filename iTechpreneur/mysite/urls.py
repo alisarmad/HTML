@@ -22,7 +22,7 @@ urlpatterns = [
 	# path('student-dashboard/',StudentDashboard.as_view(),name='student-dashboard'),
 
 
-
+#Graduate 
 	path('future-dashboard/',FutureDashboard.as_view(),name='future-dashboard'),
 	path('future-profile/',FutureProfile.as_view(),name='future-profile'),
 	path('future-edit-profile/',FutureEditProfile.as_view(),name='future-edit-profile'),
@@ -37,7 +37,7 @@ urlpatterns = [
 	path('future-group/',FutureGroupChat.as_view(),name='future-group'),
 	path('future_teacher_unfollow/<int:id1>/<int:id2>/',future_teacher_unfollow,name='future_teacher_unfollow'),
 
-
+#student
 	path('existing-dashboard/',ExistingStudentDashboard.as_view(),name='existing-dashboard'),
 	path('existing-profile/',ExistingStudentProfile.as_view(),name='existing-profile'),
 	path('existing-notification/',ExistingStudentNotification.as_view(),name='existing-notification'),
@@ -47,7 +47,7 @@ urlpatterns = [
 
 
 
-
+#Professsor 
 	path('teacher-dashboard/',TeacherDashboard.as_view(),name='teacher-dashboard'),
 	path('teacher-profile/',TeacherProfile.as_view(),name='teacher-profile'),
 	path('teacher-search-future/',TeacherSearchFuture.as_view(),name='teacher-search-future'),
@@ -57,7 +57,7 @@ urlpatterns = [
 	path('teacher-notification/',TeacherNotification.as_view(),name='teacher-notification'),
 	# path('future-unfollow-by-teacher/<int:id1>/<int:id2>/',future_unfollow_by_teacher,name='future-unfollow-by-teacher'),
 
-
+#employee 
 	path('employee-dashboard/',EmployeeDashboard.as_view(),name='employee-dashboard'),
 	path('employee-profile/',EmployeeProfile.as_view(),name='employee-profile'),
 	path('employee-notification/',EmployeeNotification.as_view(),name='employee-notification'),
@@ -71,11 +71,11 @@ urlpatterns = [
 
 
 
-	path('existing-employee-dashboard/',ExistingEmployeeDashboard.as_view(),name='existing-employee-dashboard'),
-	path('existing-employee-profile/',ExistingEmployeeProfile.as_view(),name='existing-employee-profile'),
-	path('existing-employee-notification/',ExistingEmployeeNotification.as_view(),name='existing-employee-notification'),
-	path('existing-employee-add-post/',ExistingEmployeeAddPost.as_view(),name='existing-employee-add-post'),
-	path('existing-employee-search-student/',ExistingEmployeeSearchStudent.as_view(),name='existing-employee-add-post-search-student'),
+	#path('existing-employee-dashboard/',ExistingEmployeeDashboard.as_view(),name='existing-employee-dashboard'),
+	#path('existing-employee-profile/',ExistingEmployeeProfile.as_view(),name='existing-employee-profile'),
+	#path('existing-employee-notification/',ExistingEmployeeNotification.as_view(),name='existing-employee-notification'),
+	#path('existing-employee-add-post/',ExistingEmployeeAddPost.as_view(),name='existing-employee-add-post'),
+	#path('existing-employee-search-student/',ExistingEmployeeSearchStudent.as_view(),name='existing-employee-add-post-search-student'),
 
 
 	# path('employee-dashboard/',EmployeeDashboard.as_view(),name='employee-dashboard'),
