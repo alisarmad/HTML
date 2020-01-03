@@ -76,24 +76,13 @@ else
 
 
 
-if($('input[name=user_type]:checked').length == 0)
-{
-  $("#user_type_error").text('Please select a user type.');
-      document.getElementById("user_type_error").style.color = "red";
-    return false; 
-}
-else
-{
-   $("#user_type_error").text('');
-}
-
 
   console.log('before ajax');
 
   $.ajax({
     url: '/login/',
     type: "POST",
-    data: {'username':username,'password':password,'user_type':user_type,'csrfmiddlewaretoken':token},
+    data: {'username':username,'password':password,'csrfmiddlewaretoken':token},
     dataType: 'json',
     cache: false,
     success: function(response){
@@ -109,17 +98,14 @@ else
     if (response == '1')
     {
 
-       alert('gghghg');
        window.location.href='/existing-dashboard/';
     }
     if (response == '2')
     {
-       alert('gghghg');
        window.location.href='/future-dashboard/';
     }
     if (response == '3')
     {
-       alert('gghghg');
        window.location.href='/teacher-dashboard/';
     }
     if(response == '4')

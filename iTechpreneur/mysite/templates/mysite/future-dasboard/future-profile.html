@@ -20,7 +20,7 @@
                         <div class="col-sm-8 profile-right">
                             <div class="name-dtl">
                               <h1 class="name">{{ user_info.first_name }}  {{ user_info.surname }}</h1>
-                              <p class="place">Future Student</p>
+                              <p class="place">Graduate</p>
                               <!-- <a href="{% url 'mysite:future-edit-profile'%}" class="btn btn-sm-dark"><i class="fas fa-edit"></i> Edit</a> -->
                             </div>
 
@@ -32,42 +32,16 @@
                               </div>
 
                               <div class="row">
-                                <div class="col-5 left-name">Address</div>
+                                <div class="col-5 left-name">Location</div>
                                 <div class="col-7 rgt-dtl">
-                                    <p>{{ user_info.address }}</p>
+                                    <p>{{ user_info.country.name }}</p>
                                 </div>
                               </div>
 
                               <div class="row">
-                                <div class="col-5 left-name">Subjects interested in </div>
-                                <div class="col-7 rgt-dtl"><span class="badge badge-info">{{ user_info.subject_interested.name }}</span></div>
+                                <div class="col-5 left-name">Technical Subject</div>
+                                <div class="col-7 rgt-dtl"><span class="badge badge-info">{{ user_info.technical_subject }}</span></div>
                               </div>
-
-                              <div class="row">
-                                <div class="col-5 left-name">Preferred Region/Country </div>
-                                <div class="col-7 rgt-dtl"><p>{{ user_info.country.name }}</p></div>
-                              </div>
-
-                              <div class="row">
-                                <div class="col-5 left-name">Highest Degree obtained of expected grades</div>
-                                <div class="col-7 rgt-dtl"><p>{{ user_info.highest_degree_obtained }}</p></div>
-                              </div>
-
-                            </div>
-
-                            <div class="contact-dtl">
-                              <h1 class="hdg">basic information</h1>
-                              <div class="row">
-                                <div class="col-5 left-name">D.O.B.</div>
-                                <div class="col-7 rgt-dtl"><p>{{ user_info.date_of_birth }}</p></div>
-                              </div>
-
-                          <!--     <div class="row">
-                                <div class="col-5 left-name">Gender</div>
-                                <div class="col-7 rgt-dtl">
-                                    <p>Male</p>
-                                </div>
-                              </div> -->
 
                             </div>
 

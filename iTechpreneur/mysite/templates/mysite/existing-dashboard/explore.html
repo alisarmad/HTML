@@ -1,0 +1,196 @@
+{% extends 'mysite/existing-dashboard/existing-main.html' %}
+{% load static %}
+{% block content %}
+      <div class="container bootstrap snippet">
+        <div class="row">
+            <div class="col">
+                <div class="main-box no-header clearfix">
+                    <div class="main-box-body clearfix">
+                        <div class="table-responsive">
+                          {% if all_users %}
+                            <table class="table user-list">
+                                
+                                <tbody>
+                                  {% for i in all_users %}
+                                    <tr>
+                                        <td>
+                                          
+    {{i.u}}  {{i.u}}                        <img src="https://bootdey.com/img/Content/user_1.jpg" alt="">
+                                            <a href="#" class="user-link">{{i.first_name}} {{i.surname}}</a>
+                                            <span class="user-subhead" style="font-size:11px;"><span class="badge badge-primary">{{i.technical_subject}}</span>, <span class="badge badge-primary">{{i.country}}</span>  </span>
+                                        </td>
+                                        
+                                        
+                                        <td class="text-center">
+                                          <form role="form" method="POST" action="{% url 'mysite:existing-explore' %}"> {% csrf_token %}
+                                            <input type="hidden" name="{{i.user_email}}" id="{{i.user_email}}" value="{{i.user_email}}" hidden>
+                                            <input type="hidden" name="{{i.email}}" id="{{i.email}}" value="{{i.email}}" hidden>
+                                            
+                                            <input type="submit" class="btn btn-primary" id="follow" value="{{i.followText}}">
+                                          </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor%}
+                                    
+                                </tbody>
+                            </table>
+                            
+                            {% else%}
+                            <p>There is no User</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+{% endblock %}
+<script>
+
+  $('form').on('submit', function(e){
+    e.preventDefault();
+
+    var token =  $(this).find('input').eq(0).val()
+    var follower_email =  $(this).find('input').eq(1).val()
+    var following_email = $(this).find('input').eq(2).val()
+    if($(this).find('input:submit').val()=="Follow")
+    {
+      $(this).find('input:submit').val("Unfollow")
+    }
+    else{
+      $(this).find('input:submit').val("Follow")
+    }
+   
+    console.log("follow clicked")
+    console.log('before ajax')
+    $.ajax({
+        url: '/existing-explore/',
+        type: "POST",
+        data: { 'following_email': following_email, 'follower_email':follower_email,'csrfmiddlewaretoken':token },
+        dataType: 'json',
+        cache: false,
+        success: function(response){
+            if( response =='1'){
+                console.log("response",response)
+                //$(this).find('input:submit').val("Unfollow")
+                
+            }
+            else if(response=='2'){
+              //$(this).find('input:submit').val("follow")
+            }
+            else{
+                console.log(response)
+                return false
+            }
+        }
+
+    });
+    console.log("after ajax")
+  })
+
+  /*
+  $(document).on('click', '#follow', function(e){  
+
+      console.log("event: ",e)
+      var input = document.getElementsByTagName('input')[0].name;
+
+      console.log("input ",input);
+      
+      var token=$('input[name="csrfmiddlewaretoken"]').val();
+     
+
+      console.log("follow clicked")
+      console.log('before ajax')
+      $.ajax({
+          url: '/explore/',
+          type: "POST",
+          data: { 'following_email': following_email, 'follower_email':follower_email,'csrfmiddlewaretoken':token },
+          dataType: 'json',
+          cache: false,
+          success: function(response){
+              if( response =='1'){
+                  console.log("response",response)
+                  $("#follow").html("Unfollow");
+                  
+              }
+              else{
+                  console.log(response)
+                  return false
+              }
+          }
+
+      });
+      console.log("after ajax")
+    });
+    */
+</script>
+      <style>
+        .main-box.no-header {
+          padding-top: 20px;
+      }
+      .main-box {
+          background: #FFFFFF;
+          -webkit-box-shadow: 1px 1px 2px 0 #CCCCCC;
+          -moz-box-shadow: 1px 1px 2px 0 #CCCCCC;
+          -o-box-shadow: 1px 1px 2px 0 #CCCCCC;
+          -ms-box-shadow: 1px 1px 2px 0 #CCCCCC;
+          box-shadow: 1px 1px 2px 0 #CCCCCC;
+          margin-bottom: 16px;
+          -webikt-border-radius: 3px;
+          -moz-border-radius: 3px;
+          border-radius: 3px;
+      }
+      .table a.table-link.danger {
+          color: #e74c3c;
+      }
+      .label {
+          border-radius: 3px;
+          font-size: 0.875em;
+          font-weight: 600;
+      }
+      .user-list tbody td .user-subhead {
+          font-size: 0.875em;
+          font-style: italic;
+      }
+      .user-list tbody td .user-link {
+          display: block;
+          font-size: 1.25em;
+          padding-top: 3px;
+          margin-left: 60px;
+      }
+      a {
+          color: #3498db;
+          outline: none!important;
+      }
+      .user-list tbody td>img {
+          position: relative;
+          max-width: 50px;
+          float: left;
+          margin-right: 15px;
+      }
+      
+      .table thead tr th {
+          text-transform: uppercase;
+          font-size: 0.875em;
+      }
+      .table thead tr th {
+          border-bottom: 2px solid #e7ebee;
+      }
+      .table tbody tr td:first-child {
+          font-size: 1.125em;
+          font-weight: 300;
+      }
+      .table tbody tr td {
+          font-size: 0.875em;
+          vertical-align: middle;
+          border-top: 1px solid #e7ebee;
+          padding: 12px 8px;
+      }
+      </style>
+
+   <script src="{% static 'mysite/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'mysite/css/style.css' %}"></script>
+
+</body>
+</html>

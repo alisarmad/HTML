@@ -16,50 +16,22 @@
 <body>
 
 <section class="layout-main">
-  <div class="sidebar">
-    <div class="sidebar-inner">
-        <div class="logo-bar">
-          <a href="">
-            <img src="{% static 'mysite/images/logo.png' %}" />
-          </a>
-        </div>
-        <div class="menu-bar">
-          <ul class="main-menu">
-            <li class="active">
-              <a href="{% url 'mysite:existing-dashboard' %}" ><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a>
-            </li>
-            <li>
-              <a href="{% url 'mysite:existing-profile' %}" ><i class="fas fa-user"></i> <span>Profile</span></a>
-            </li>
-            <li>
-              <a href="{% url 'mysite:existing-search' %}" ><i class="fas fa-user"></i> <span>Searh Employer</span></a>
-            </li>
-            <li>
-              <a href="{% url 'mysite:existing-following-employee' %}" ><i class="fas fa-user"></i> <span>Employee Following</span></a>
-            </li>
-             <li>
-              <a href="{% url 'mysite:existing-add-post' %}" ><i class="fas fa-user"></i> <span>Add Post</span></a>
-            </li>
-<!--              <li>
-              <a href="#" ><i class="fas fa-user"></i> <span>Messaging</span></a>
-            </li> -->
-            <li>
-              <a href="{% url 'mysite:existing-notification' %}" ><i class="far fa-bell"></i><span>Notifications</span></a>
-            </li>
-          </ul>
-        </div>
-    </div>
-  </div>
+  <!--
 
-  <div class="content-wrapper">
+-->
+  <div class="content-wrapper ">
     <div class="wrapper-inner">
-      <div class="row">
-        <div class="col-8 left-data">
+      <div class="container">
         <div class="top-bar">
          
             <div class="bar-left">
               <div class="form-group form-parts mb-0">
                 <!-- <input type="text" class="form-control" placeholder="Search here..."> -->
+                <div class="logo-bar">
+                  <a href="">
+                    <img src="{% static 'mysite/images/logo.png' %}" />
+                  </a>
+                </div>
               </div>
             </div>
 
@@ -72,105 +44,64 @@
                 <div class="for-des"></div>
               </button>
               <div class="dropdown-menu">
+              <a class="dropdown-item" href="{% url 'password_change' %}">Change Password</a>
               <a class="dropdown-item" href="{% url 'mysite:logout' %}">Logout</a>
-              </div>
+                
             </div>
+              
+              
+           
+        </div>
+
+
+
+
+      </div>
+    </div>
+  </div>
+    </div>
+    </div>
+
+    <!-- Left Navigation and Right Navigation Bar and Posts and other stuff in middle-->
+
+    <div class="container mt-5 navbar-wrapper">
+      <div class="row ">
+        <div class="col-2 nav-wrapper">
+          <div class="menu-bar">
+            <ul class="main-menu">
+              <li>
+                <a href="{% url 'mysite:existing-dashboard' %}" ><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a>
+              </li>
+              <li>
+                <a href="{% url 'mysite:existing-profile' %}" ><i class="fas fa-user"></i> <span>Profile</span></a>
+              </li>
+              <li>
+                <a href="{% url 'mysite:existing-explore' %}" ><i class="fas fa-graduation-cap"></i> <span>Explore</span></a>
+              </li>
+              <li class="">
+                <a href="{% url 'mysite:existing-add-post' %}" ><i class="fas fa-graduation-cap"></i> <span>Add Post</span></a>
+              </li>
+             
+            </ul>
           </div>
+        </div>
+        <div class="col-7 post-wrapper">
+          
+          {% block content %}
+          {% endblock %}
+          
+        </div>
+        <div class="col-2 contact-wrapper">
+          hello how are 
         </div>
       </div>
     </div>
-<!--
-        <div class="inbox_people">
-          <div class="headind_srch">
-            <div class="recent_heading">
-              <h4>Recent</h4>
-            </div>
-            <div class="srch_bar">
-              <div class="stylish-input-group">
-                <input type="text" class="search-bar"  placeholder="Search" >
-                <span class="input-group-addon">
-                <button type="button"> <i class="fa fa-search" aria-hidden="true"></i> </button>
-                </span> </div>
-            </div>
-          </div>
-          <div class="inbox_chat">
-            <div class="chat_list active_chat">
-              <div class="chat_people">
-                <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
-                <div class="chat_ib">
-                  <h5>Sunil Rajput <span class="chat_date">Dec 25</span></h5>
-                  <p>Test, which is a new approach to have all solutions 
-                    astrology under one roof.</p>
-                </div>
-              </div>
-            </div>
-            <div class="chat_list">
-              <div class="chat_people">
-                <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
-                <div class="chat_ib">
-                  <h5>Sunil Rajput <span class="chat_date">Dec 25</span></h5>
-                  <p>Test, which is a new approach to have all solutions 
-                    astrology under one roof.</p>
-                </div>
-              </div>
-            </div>
-            <div class="chat_list">
-              <div class="chat_people">
-                <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
-                <div class="chat_ib">
-                  <h5>Sunil Rajput <span class="chat_date">Dec 25</span></h5>
-                  <p>Test, which is a new approach to have all solutions 
-                    astrology under one roof.</p>
-                </div>
-              </div>
-            </div>
-            <div class="chat_list">
-              <div class="chat_people">
-                <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
-                <div class="chat_ib">
-                  <h5>Sunil Rajput <span class="chat_date">Dec 25</span></h5>
-                  <p>Test, which is a new approach to have all solutions 
-                    astrology under one roof.</p>
-                </div>
-              </div>
-            </div>
-            <div class="chat_list">
-              <div class="chat_people">
-                <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
-                <div class="chat_ib">
-                  <h5>Sunil Rajput <span class="chat_date">Dec 25</span></h5>
-                  <p>Test, which is a new approach to have all solutions 
-                    astrology under one roof.</p>
-                </div>
-              </div>
-            </div>
-            <div class="chat_list">
-              <div class="chat_people">
-                <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
-                <div class="chat_ib">
-                  <h5>Sunil Rajput <span class="chat_date">Dec 25</span></h5>
-                  <p>Test, which is a new approach to have all solutions 
-                    astrology under one roof.</p>
-                </div>
-              </div>
-            </div>
-            <div class="chat_list">
-              <div class="chat_people">
-                <div class="chat_img"> <img src="https://ptetutorials.com/images/user-profile.png" alt="sunil"> </div>
-                <div class="chat_ib">
-                  <h5>Sunil Rajput <span class="chat_date">Dec 25</span></h5>
-                  <p>Test, which is a new approach to have all solutions 
-                    astrology under one roof.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
 
-      -->
-     
-        <!---Inbox People -->
-        {% block content %}
-        {% endblock %}
+  </section>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="{% static 'mysite/js/bootstrap.min.js' %}"></script>
+    
+</body>
 
- 
+</html>

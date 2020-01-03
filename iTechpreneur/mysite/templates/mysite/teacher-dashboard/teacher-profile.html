@@ -19,7 +19,7 @@
                         <div class="col-sm-8 profile-right">
                             <div class="name-dtl">
                               <h1 class="name">{{ user_info.first_name }}  {{ user_info.surname }}</h1>
-                              <p class="place">Academics</p>
+                              <p class="place">Professor</p>
                               <!-- <a href="{% url 'mysite:teacher-edit-post' %}" class="btn btn-sm-dark"><i class="fas fa-edit"></i> Edit</a> -->
                             </div>
 
@@ -32,32 +32,17 @@
                               </div>
 
                               <div class="row">
-                                <div class="col-5 left-name">Title</div>
+                                <div class="col-5 left-name">Location</div>
                                 <div class="col-7 rgt-dtl">
-                                    <p>{{ user_info.title }}</p>
+                                    <p>{{ user_info.country.name }}</p>
                                 </div>
                               </div>
 
               
 
                               <div class="row">
-                                <div class="col-5 left-name">University Name</div>
-                                <div class="col-7 rgt-dtl"><p>{{ user_info.university_name }}</p></div>
-                              </div>
-
-                               <div class="row">
-                                <div class="col-5 left-name">University Address</div>
-                                <div class="col-7 rgt-dtl"><p>{{ user_info.university_address }}</p></div>
-                              </div>
-
-                              <div class="row">
-                                <div class="col-5 left-name">Program Title</div>
-                                <div class="col-7 rgt-dtl"><p>{{ user_info.programme_title }}</p></div>
-                              </div>
-
-                              <div class="row">
-                                <div class="col-5 left-name">Position</div>
-                                <div class="col-7 rgt-dtl"><p>{{ user_info.position }}</p></div>
+                                <div class="col-5 left-name">Technical Subject</div>
+                                <div class="col-7 rgt-dtl"><p>{{ user_info.technical_subject }}</p></div>
                               </div>
 
                             </div>

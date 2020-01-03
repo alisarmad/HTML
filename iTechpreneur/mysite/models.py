@@ -1,6 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
+
+
+
+
 # Create your models here.
 class TechnicalSubject(models.Model):
 	name= models.CharField(max_length=100)
@@ -107,6 +112,16 @@ class Future_Student(models.Model):
 	is_active = models.BooleanField(default=1)
 	time_stamp = models.DateTimeField(auto_now=True)
 
+"""
+Following Table
+"""
+
+class StudentFollowing(models.Model):
+	follower_email = models.CharField(max_length=200, blank=True, null= True)
+	following_email = models.CharField(max_length=200, blank=True, null= True)
+
+
+
 """ Student Model hold all records related to students 
 	1- User Name from User Table using foreign key
 	2- First Name 
@@ -126,6 +141,7 @@ class Students(models.Model):
 	technical_subject = models.ForeignKey(TechnicalSubject, on_delete=models.CASCADE, blank = True, null= True)
 	student_type = models.ForeignKey(StudentType,on_delete=models.CASCADE, blank=True, null=True)
 	is_active = models.BooleanField(default=1)
+	designation = models.CharField(max_length=200 , blank=True, null = True)
 	time_stamp = models.DateTimeField(auto_now=True)
 
 """
@@ -146,6 +162,7 @@ class Graduate(models.Model):
 	country = models.ForeignKey(Country, on_delete=models.CASCADE, blank=True, null=True)
 	technical_subject = models.ForeignKey(TechnicalSubject, on_delete=models.CASCADE, blank = True, null= True)
 	is_active = models.BooleanField(default=1)
+	designation = models.CharField(max_length=200 , blank=True, null = True)
 	time_stamp = models.DateTimeField(auto_now=True)
 
 """
@@ -165,6 +182,7 @@ class Professor(models.Model):
 	country = models.ForeignKey(Country, on_delete=models.CASCADE, blank=True, null=True)
 	technical_subject = models.ForeignKey(TechnicalSubject, on_delete=models.CASCADE, blank=True, null=True)
 	is_active = models.BooleanField(default=1)
+	designation = models.CharField(max_length=200 , blank=True, null = True)
 	time_stamp = models.DateTimeField(auto_now=True)
 
 
@@ -187,6 +205,7 @@ class Employeeee(models.Model):
 	country = models.ForeignKey(Country, on_delete=models.CASCADE, blank=True, null=True)
 	technical_subject = models.ForeignKey(TechnicalSubject, on_delete=models.CASCADE, blank=True, null=True)
 	is_active = models.BooleanField(default=1)
+	designation = models.CharField(max_length=200, blank=True, null = True )
 	time_stamp = models.DateTimeField(auto_now=True)
 
 class Employee(models.Model):
@@ -261,6 +280,13 @@ class Future_connections(models.Model):
 	future_student_id = models.ForeignKey(Future_Student,on_delete=models.CASCADE)
 	future_student_user_id = models.ForeignKey(User,on_delete=models.CASCADE)
 	connected_teachers = models.TextField(blank=True,null=True)
+
+# Comments Model
+class Comment(models.Model):
+	user_id = models.ForeignKey(User, on_delete= models.CASCADE)
+	comment_text = models.TextField(blank=True, null = True)
+	post_id = models.CharField(max_length=200)
+	time_stamp = models.DateTimeField(auto_now = True)
 
 
 class Teacher_post(models.Model):

@@ -17,10 +17,642 @@ from email.message import EmailMessage
 import os,random,string
 import json
 from django.core import serializers
+from django.core.mail import send_mail
 
 
 class Home(TemplateView):
 	template_name=('mysite/index.html')
+
+
+#ExistingExplore (List of all users)
+class ExistingExplore(TemplateView):
+	template_name = ('mysite/existing-dashboard/explore.html')
+	def get_context_data(self, *args, **kwargs):
+		context = super(ExistingExplore, self).get_context_data(*args, **kwargs)
+		user_id = int(self.request.session['_auth_user_id'])
+		
+
+		#response_dict = {}
+		response_list = []
+		students = Students.objects.exclude(username_id = user_id)
+		graduates = Graduate.objects.exclude(username_id = user_id)
+		professors = Professor.objects.exclude(username_id = user_id)
+		employees = Employeeee.objects.exclude(username_id = user_id)
+
+		logged_user = Students.objects.filter(username_id = user_id).first()
+		if logged_user is None:
+			logged_user = Graduate.objects.filter(username_id = user_id).first()
+		if logged_user is None:
+			logged_user = Professor.objects.filter(username_id = user_id).first()
+		if logged_user is None:
+			logged_user = Employeeee.objects.filter(username_id = user_id).first()
+		
+		followers_objects = StudentFollowing.objects.all()
+		#print("followers objects: ", followers_objects)
+
+
+		#if followers_objects:
+			#for i in followers_objects:
+				#print("follower",i.follower_email)
+				#print("following",i.following_email)
+			
+		if logged_user:
+			print("logged user ",logged_user.email)
+		else:
+			print("could not found")
+
+		if students:
+			for i in students:
+				print("students .email :",i.email )
+				context1 = {}
+				#logged user id
+				if followers_objects:
+					for j in followers_objects:
+						print()
+						if logged_user.email == j.follower_email and i.email == j.following_email:
+							print("j.follower email: ",logged_user, j.follower_email, i.email, j.following_email)
+							context1['followText'] = "Unfollow"
+							break
+						else:
+							context1['followText'] = "Follow"
+				else:
+					context1['followText'] = "Follow"
+				context1['user_email'] = logged_user.email
+				context1['first_name'] = i.first_name
+				context1['surname'] = i.surname
+				context1['email'] = i.email
+				context1['technical_subject'] = i.technical_subject
+				context1['country'] = i.country
+				response_list.append(context1)
+		if graduates:
+			for i in graduates:
+				context1 = {}
+				if followers_objects:
+					for j in followers_objects:
+						if logged_user.email == j.follower_email and i.email == j.following_email:
+							
+							context1['followText'] = "Unfollow"
+							break
+						else:
+							context1['followText'] = "Follow"
+				else:
+					context1['followText'] = "Follow"
+				#logged user id 
+				context1['user_email'] = logged_user.email
+				context1['first_name'] = i.first_name
+				context1['surname'] = i.surname
+				context1['email'] = i.email
+				context1['technical_subject'] = i.technical_subject
+				context1['country'] = i.country
+				response_list.append(context1)
+		if professors:
+			for i in professors:
+				context1 = {}
+				#logged user id 
+				if followers_objects:
+					for j in followers_objects:
+						if logged_user.email == j.follower_email and i.email == j.following_email:
+							context1['followText'] = "Unfollow"
+							break
+						else:
+							context1['followText'] = "Follow"
+				else:
+					context1['followText'] = "Follow"
+				context1['user_email'] = logged_user.email
+				context1['first_name'] = i.first_name
+				context1['surname'] = i.surname
+				context1['email'] = i.email
+				context1['technical_subject'] = i.technical_subject
+				context1['country'] = i.country
+				response_list.append(context1)
+		if employees:
+			for i in employees:
+				context1 = {}
+				#logged user id 
+				if followers_objects:
+					for j in followers_objects:
+						if logged_user.email == j.follower_email and i.email == j.following_email:
+							context1['followText'] = "Unfollow"
+						else:
+							context1['followText'] = "Follow"
+				else:
+					context1['followText'] = "Follow"
+				context1['user_email'] = logged_user.email
+				context1['first_name'] = i.first_name
+				context1['surname'] = i.surname
+				context1['email'] = i.email
+				context1['technical_subject'] = i.technical_subject
+				context1['country'] = i.country
+				response_list.append(context1)
+		#response_list.append(students)
+		#response_list.append(graduates)
+		#response_list.append(professors)
+		#response_list.append(employees)
+		#print("all users ",response_list)
+		#response_dict.update(response_list)
+		#print(response_dict)
+		context['all_users'] = response_list
+		return context
+	def post(self, request):
+		try:
+			print('in explore')
+			print('data', request.POST)
+			follower_email = request.POST.get('follower_email')
+			following_email = request.POST.get('following_email')
+			print('email: ', following_email)
+			print('user id', follower_email)
+			#check record if it is exist
+			
+			status = StudentFollowing.objects.filter(following_email = following_email, follower_email = follower_email).first()
+			#status1 = StudentFollowing.objects.filter(following_email = following_email, following_email = following_email).first()
+			if status:
+				status.delete()
+				print("status ", status)
+				return HttpResponse('2')
+			else:
+				print("could not found")
+				follow_info = StudentFollowing.objects.create( following_email = following_email, follower_email = follower_email)
+				follow_info.save()
+				return HttpResponse('1')
+		except Exception as e:
+			print('error ',e)
+			return HttpResponse('3')
+
+# Graduate Explore
+
+#Explore (List of all users)
+class GraduateExplore(TemplateView):
+	template_name = ('mysite/future-dasboard/explore.html')
+	def get_context_data(self, *args, **kwargs):
+		context = super(GraduateExplore, self).get_context_data(*args, **kwargs)
+		user_id = int(self.request.session['_auth_user_id'])
+		
+
+		#response_dict = {}
+		response_list = []
+		students = Students.objects.exclude(username_id = user_id)
+		graduates = Graduate.objects.exclude(username_id = user_id)
+		professors = Professor.objects.exclude(username_id = user_id)
+		employees = Employeeee.objects.exclude(username_id = user_id)
+
+		logged_user = Students.objects.filter(username_id = user_id).first()
+		if logged_user is None:
+			logged_user = Graduate.objects.filter(username_id = user_id).first()
+		elif logged_user is None:
+			logged_user = Professor.objects.filter(username_id = user_id).first()
+		elif logged_user is None:
+			logged_user = Employeeee.objects.filter(username_id = user_id).first()
+		
+		followers_objects = StudentFollowing.objects.all()
+		print("followers objects: ", followers_objects)
+
+
+		if followers_objects:
+			for i in followers_objects:
+				print("follower",i.follower_email)
+				print("following",i.following_email)
+			
+		if logged_user:
+			print("logged user ",logged_user.email)
+		else:
+			print("could not found")
+
+		if students:
+			for i in students:
+				print("students .email :",i.email )
+				context1 = {}
+				#logged user id
+				if followers_objects:
+					for j in followers_objects:
+						
+						if logged_user.email == j.follower_email and i.email == j.following_email:
+							
+							context1['followText'] = "Unfollow"
+							break
+						else:
+							context1['followText'] = "Follow"
+				else:
+					context1['followText'] = "Follow"
+				context1['user_email'] = logged_user.email
+				context1['first_name'] = i.first_name
+				context1['surname'] = i.surname
+				context1['email'] = i.email
+				context1['technical_subject'] = i.technical_subject
+				context1['country'] = i.country
+				response_list.append(context1)
+		if graduates:
+			for i in graduates:
+				context1 = {}
+				if followers_objects:
+					for j in followers_objects:
+						if logged_user.email == j.follower_email and i.email == j.following_email:
+							
+							context1['followText'] = "Unfollow"
+							break
+						else:
+							context1['followText'] = "Follow"
+				else:
+					context1['followText'] = "Follow"
+				#logged user id 
+				context1['user_email'] = logged_user.email
+				context1['first_name'] = i.first_name
+				context1['surname'] = i.surname
+				context1['email'] = i.email
+				context1['technical_subject'] = i.technical_subject
+				context1['country'] = i.country
+				response_list.append(context1)
+		if professors:
+			for i in professors:
+				context1 = {}
+				#logged user id 
+				if followers_objects:
+					for j in followers_objects:
+						if logged_user.email == j.follower_email and i.email == j.following_email:
+							context1['followText'] = "Unfollow"
+							break
+						else:
+							context1['followText'] = "Follow"
+				else:
+					context1['followText'] = "Follow"
+				context1['user_email'] = logged_user.email
+				context1['first_name'] = i.first_name
+				context1['surname'] = i.surname
+				context1['email'] = i.email
+				context1['technical_subject'] = i.technical_subject
+				context1['country'] = i.country
+				response_list.append(context1)
+		if employees:
+			for i in employees:
+				context1 = {}
+				#logged user id 
+				if followers_objects:
+					for j in followers_objects:
+						if logged_user.email == j.follower_email and i.email == j.following_email:
+							context1['followText'] = "Unfollow"
+						else:
+							context1['followText'] = "Follow"
+				else:
+					context1['followText'] = "Follow"
+				context1['user_email'] = logged_user.email
+				context1['first_name'] = i.first_name
+				context1['surname'] = i.surname
+				context1['email'] = i.email
+				context1['technical_subject'] = i.technical_subject
+				context1['country'] = i.country
+				response_list.append(context1)
+		#response_list.append(students)
+		#response_list.append(graduates)
+		#response_list.append(professors)
+		#response_list.append(employees)
+		print("all users ",response_list)
+		#response_dict.update(response_list)
+		#print(response_dict)
+		context['all_users'] = response_list
+		return context
+	def post(self, request):
+		try:
+			print('in explore')
+			print('data', request.POST)
+			follower_email = request.POST.get('follower_email')
+			following_email = request.POST.get('following_email')
+			print('email: ', following_email)
+			print('user id', follower_email)
+			#check record if it is exist
+			
+			status = StudentFollowing.objects.filter(following_email = following_email, follower_email = follower_email).first()
+			#status1 = StudentFollowing.objects.filter(following_email = following_email, following_email = following_email).first()
+			if status:
+				status.delete()
+				print("status ", status)
+				return HttpResponse('2')
+			else:
+				print("could not found")
+				follow_info = StudentFollowing.objects.create( following_email = following_email, follower_email = follower_email)
+				follow_info.save()
+				return HttpResponse('1')
+		except Exception as e:
+			print('error ',e)
+			return HttpResponse('3')
+
+
+# Professor Explore
+#Explore (List of all users)
+class ProfessorExplore(TemplateView):
+	template_name = ('mysite/teacher-dashboard/explore.html')
+	def get_context_data(self, *args, **kwargs):
+		context = super(ProfessorExplore, self).get_context_data(*args, **kwargs)
+		user_id = int(self.request.session['_auth_user_id'])
+		print("logged user id :", user_id)
+
+		#response_dict = {}
+		response_list = []
+		students = Students.objects.exclude(username_id = user_id)
+		graduates = Graduate.objects.exclude(username_id = user_id)
+		professors = Professor.objects.exclude(username_id = user_id)
+		employees = Employeeee.objects.exclude(username_id = user_id)
+
+		logged_user = Students.objects.filter(username_id = user_id).first()
+		print("student logged :", logged_user)
+		if logged_user is None:
+			print("logged graduate")
+			logged_user = Graduate.objects.filter(username_id = user_id).first()
+			print("logged graduate:::", logged_user)
+		if logged_user is None:
+			logged_user = Professor.objects.filter(username_id = user_id).first()
+			print("logged user from professor: ", logged_user)
+		if logged_user is None:
+			print("logged employee")
+			logged_user = Employeeee.objects.filter(username_id = user_id).first()
+		
+		followers_objects = StudentFollowing.objects.all()
+		#print("followers objects: ", followers_objects)
+
+
+		if followers_objects:
+			for i in followers_objects:
+				#print("follower",i.follower_email)
+				#print("following",i.following_email)
+				print("hello")
+		if logged_user:
+			print("logged user ",logged_user.email)
+		else:
+			print("could not found user")
+
+		if students:
+			for i in students:
+				#print("students .email :",i.email )
+				context1 = {}
+				#logged user id
+				if followers_objects:
+					for j in followers_objects:
+						
+						if logged_user.email == j.follower_email and i.email == j.following_email:
+							
+							context1['followText'] = "Unfollow"
+							break
+						else:
+							context1['followText'] = "Follow"
+				else:
+					context1['followText'] = "Follow"
+				context1['user_email'] = logged_user.email
+				context1['first_name'] = i.first_name
+				context1['surname'] = i.surname
+				context1['email'] = i.email
+				context1['technical_subject'] = i.technical_subject
+				context1['country'] = i.country
+				response_list.append(context1)
+		if graduates:
+			for i in graduates:
+				context1 = {}
+				if followers_objects:
+					for j in followers_objects:
+						if logged_user.email == j.follower_email and i.email == j.following_email:
+							
+							context1['followText'] = "Unfollow"
+							break
+						else:
+							context1['followText'] = "Follow"
+				else:
+					context1['followText'] = "Follow"
+				#logged user id 
+				context1['user_email'] = logged_user.email
+				context1['first_name'] = i.first_name
+				context1['surname'] = i.surname
+				context1['email'] = i.email
+				context1['technical_subject'] = i.technical_subject
+				context1['country'] = i.country
+				response_list.append(context1)
+		if professors:
+			for i in professors:
+				context1 = {}
+				#logged user id 
+				if followers_objects:
+					for j in followers_objects:
+						if logged_user.email == j.follower_email and i.email == j.following_email:
+							context1['followText'] = "Unfollow"
+							break
+						else:
+							context1['followText'] = "Follow"
+				else:
+					context1['followText'] = "Follow"
+				context1['user_email'] = logged_user.email
+				context1['first_name'] = i.first_name
+				context1['surname'] = i.surname
+				context1['email'] = i.email
+				context1['technical_subject'] = i.technical_subject
+				context1['country'] = i.country
+				response_list.append(context1)
+		if employees:
+			for i in employees:
+				context1 = {}
+				#logged user id 
+				if followers_objects:
+					for j in followers_objects:
+						if logged_user.email == j.follower_email and i.email == j.following_email:
+							context1['followText'] = "Unfollow"
+						else:
+							context1['followText'] = "Follow"
+				else:
+					context1['followText'] = "Follow"
+				context1['user_email'] = logged_user.email
+				context1['first_name'] = i.first_name
+				context1['surname'] = i.surname
+				context1['email'] = i.email
+				context1['technical_subject'] = i.technical_subject
+				context1['country'] = i.country
+				response_list.append(context1)
+		#response_list.append(students)
+		#response_list.append(graduates)
+		#response_list.append(professors)
+		#response_list.append(employees)
+		print("all users ",response_list)
+		#response_dict.update(response_list)
+		#print(response_dict)
+		context['all_users'] = response_list
+		return context
+	def post(self, request):
+		try:
+			print('in explore')
+			print('data', request.POST)
+			follower_email = request.POST.get('follower_email')
+			following_email = request.POST.get('following_email')
+			print('email: ', following_email)
+			print('user id', follower_email)
+			#check record if it is exist
+			
+			status = StudentFollowing.objects.filter(following_email = following_email, follower_email = follower_email).first()
+			#status1 = StudentFollowing.objects.filter(following_email = following_email, following_email = following_email).first()
+			if status:
+				status.delete()
+				print("status ", status)
+				return HttpResponse('2')
+			else:
+				print("could not found")
+				follow_info = StudentFollowing.objects.create( following_email = following_email, follower_email = follower_email)
+				follow_info.save()
+				return HttpResponse('1')
+		except Exception as e:
+			print('error ',e)
+			return HttpResponse('3')
+
+
+#Employee Explore
+#Explore (List of all users)
+class EmployeeExplore(TemplateView):
+	template_name = ('mysite/employee-dashboard/explore.html')
+	def get_context_data(self, *args, **kwargs):
+		context = super(EmployeeExplore, self).get_context_data(*args, **kwargs)
+		user_id = int(self.request.session['_auth_user_id'])
+		
+
+		#response_dict = {}
+		response_list = []
+		students = Students.objects.exclude(username_id = user_id)
+		graduates = Graduate.objects.exclude(username_id = user_id)
+		professors = Professor.objects.exclude(username_id = user_id)
+		employees = Employeeee.objects.exclude(username_id = user_id)
+
+		logged_user = Students.objects.filter(username_id = user_id).first()
+		if logged_user is None:
+			logged_user = Graduate.objects.filter(username_id = user_id).first()
+		elif logged_user is None:
+			logged_user = Professor.objects.filter(username_id = user_id).first()
+		elif logged_user is None:
+			logged_user = Employeeee.objects.filter(username_id = user_id).first()
+		
+		followers_objects = StudentFollowing.objects.all()
+		print("followers objects: ", followers_objects)
+
+
+		if followers_objects:
+			for i in followers_objects:
+				print("follower",i.follower_email)
+				print("following",i.following_email)
+			
+		if logged_user:
+			print("logged user ",logged_user.email)
+		else:
+			print("could not found")
+
+		if students:
+			for i in students:
+				print("students .email :",i.email )
+				context1 = {}
+				#logged user id
+				if followers_objects:
+					for j in followers_objects:
+						
+						if logged_user.email == j.follower_email and i.email == j.following_email:
+							
+							context1['followText'] = "Unfollow"
+							break
+						else:
+							context1['followText'] = "Follow"
+				else:
+					context1['followText'] = "Follow"
+				context1['user_email'] = logged_user.email
+				context1['first_name'] = i.first_name
+				context1['surname'] = i.surname
+				context1['email'] = i.email
+				context1['technical_subject'] = i.technical_subject
+				context1['country'] = i.country
+				response_list.append(context1)
+		if graduates:
+			for i in graduates:
+				context1 = {}
+				if followers_objects:
+					for j in followers_objects:
+						if logged_user.email == j.follower_email and i.email == j.following_email:
+							
+							context1['followText'] = "Unfollow"
+							break
+						else:
+							context1['followText'] = "Follow"
+				else:
+					context1['followText'] = "Follow"
+				#logged user id 
+				context1['user_email'] = logged_user.email
+				context1['first_name'] = i.first_name
+				context1['surname'] = i.surname
+				context1['email'] = i.email
+				context1['technical_subject'] = i.technical_subject
+				context1['country'] = i.country
+				response_list.append(context1)
+		if professors:
+			for i in professors:
+				context1 = {}
+				#logged user id 
+				if followers_objects:
+					for j in followers_objects:
+						if logged_user.email == j.follower_email and i.email == j.following_email:
+							context1['followText'] = "Unfollow"
+							break
+						else:
+							context1['followText'] = "Follow"
+				else:
+					context1['followText'] = "Follow"
+				context1['user_email'] = logged_user.email
+				context1['first_name'] = i.first_name
+				context1['surname'] = i.surname
+				context1['email'] = i.email
+				context1['technical_subject'] = i.technical_subject
+				context1['country'] = i.country
+				response_list.append(context1)
+		if employees:
+			for i in employees:
+				context1 = {}
+				#logged user id 
+				if followers_objects:
+					for j in followers_objects:
+						if logged_user.email == j.follower_email and i.email == j.following_email:
+							context1['followText'] = "Unfollow"
+						else:
+							context1['followText'] = "Follow"
+				else:
+					context1['followText'] = "Follow"
+				context1['user_email'] = logged_user.email
+				context1['first_name'] = i.first_name
+				context1['surname'] = i.surname
+				context1['email'] = i.email
+				context1['technical_subject'] = i.technical_subject
+				context1['country'] = i.country
+				response_list.append(context1)
+		#response_list.append(students)
+		#response_list.append(graduates)
+		#response_list.append(professors)
+		#response_list.append(employees)
+		print("all users ",response_list)
+		#response_dict.update(response_list)
+		#print(response_dict)
+		context['all_users'] = response_list
+		return context
+	def post(self, request):
+		try:
+			print('in explore')
+			print('data', request.POST)
+			follower_email = request.POST.get('follower_email')
+			following_email = request.POST.get('following_email')
+			print('email: ', following_email)
+			print('user id', follower_email)
+			#check record if it is exist
+			
+			status = StudentFollowing.objects.filter(following_email = following_email, follower_email = follower_email).first()
+			#status1 = StudentFollowing.objects.filter(following_email = following_email, following_email = following_email).first()
+			if status:
+				status.delete()
+				print("status ", status)
+				return HttpResponse('2')
+			else:
+				print("could not found")
+				follow_info = StudentFollowing.objects.create( following_email = following_email, follower_email = follower_email)
+				follow_info.save()
+				return HttpResponse('1')
+		except Exception as e:
+			print('error ',e)
+			return HttpResponse('3')
+
+
+
 
 ###########################Future##########################################
 #Graduate dashboard
@@ -120,7 +752,7 @@ class FutureProfile(TemplateView):
 		context = super(FutureProfile, self).get_context_data(*args, **kwargs)
 		print('user_id:',self.request.session['_auth_user_id'])
 		user_id = int(self.request.session['_auth_user_id'])
-		obj = Future_Student.objects.filter(username_id=user_id).first()
+		obj = Graduate.objects.filter(username_id=user_id).first()
 		if obj:
 			context['user_info'] = obj
 		return context
@@ -576,7 +1208,7 @@ class TeacherProfile(TemplateView):
 		context = super(TeacherProfile, self).get_context_data(*args, **kwargs)
 		print('user_id:',self.request.session['_auth_user_id'])
 		user_id = int(self.request.session['_auth_user_id'])
-		obj = Teacher.objects.filter(username_id=user_id).first()
+		obj = Professor.objects.filter(username_id=user_id).first()
 		if obj:
 			context['user_info'] = obj
 		return context
@@ -799,16 +1431,57 @@ class ExistingStudentDashboard(TemplateView):
 		user_id = int(self.request.session['_auth_user_id'])
 		print("user id on dashboard :" , user_id)
 		response_list = []
-		#retrieve logged in student country and technical subject from database 
+		comment_list = []
+		posts5 = Existing_student_post.objects.all()
+		print("student posts :",posts5)
+		#retrieve logged in student country and technical subject from database
+		comments = Comment.objects.all() 
 		obj = Students.objects.filter(username_id=int(user_id)).first()
 		if obj:
 			student_objects = Students.objects.filter(country = obj.country, technical_subject=obj.technical_subject)
 			graduate_objects = Graduate.objects.filter(country=obj.country, technical_subject=obj.technical_subject)
 			professor_objects = Professor.objects.filter(country = obj.country, technical_subject = obj.technical_subject)
 			employee_objects  = Employeeee.objects.filter(country = obj.country, technical_subject = obj.technical_subject)
-			if student_objects:
-				for i in student_objects:
-					posts = Existing_student_post.objects.filter(student_user_id = i.id)
+			follow_users = StudentFollowing.objects.all()
+			if comments:
+
+				for i in comments:
+					student_comment = Students.objects.filter(email = i.user_id).first()
+					graduate_comment = Graduate.objects.filter(email = i.user_id).first()
+					professor_comment = Professor.objects.filter(email = i.user_id).first()
+					employee_comment = Employeeee.objects.filter(email = i.user_id).first()
+					
+					print("student comment object: ",student_comment.first_name, student_comment.surname)
+					print("graduate comment object: ",graduate_comment)
+					print("professor comment object: ",professor_comment)
+					print("employee comment object: ",employee_comment)
+					
+					context7 = {}
+					if student_comment:
+						context7['commenter_first_name'] = student_comment.first_name 
+						context7['commenter_sur_name'] = student_comment.surname 
+					elif graduate_comment:
+						context7['commenter_first_name'] = graduate_comment.first_name 
+						context7['commenter_sur_name'] = graduate_comment.surname 
+					elif professor_comment:
+						context7['commenter_first_name'] = professor_comment.first_name 
+						context7['commenter_sur_name'] = professor_comment.surname 
+					elif employee_comment:
+						context7['commenter_first_name'] = employee_comment.first_name 
+						context7['commenter_sur_name'] = employee_comment.surname 
+						
+					context7['comment_user_id'] = i.user_id
+					context7['comment_text'] = i.comment_text
+					context7['post_id'] = i.post_id
+					print("comment user id",i.user_id)
+					print("comment post id", i.post_id)
+					print("comment post text ", i.comment_text)
+					comment_list.append(context7)
+			#print("follow users :", follow_users)
+			#print("students objects ", student_objects)
+			if follow_users:
+				for i in follow_users:
+					posts = Existing_student_post.objects.filter(student_id_id = i.id)
 					if posts:
 						for j in posts:
 							context1 = {}
@@ -818,10 +1491,57 @@ class ExistingStudentDashboard(TemplateView):
 							context1['file']= j.file.name
 							context1['time_stamp'] = j.time_stamp
 							response_list.append(context1)
+					posts1 = Future_student_post.objects.filter(future_student_id_id = i.id)	
+					if posts1:
+						for j in posts1:
+							context4 = {}
+							context4['user_name']= j.future_student_user_id.first_name
+							context4['title'] = j.title
+							context4['description'] = j.description
+							context4['file']=j.file.name
+							context4['time_stamp']=j.time_stamp
+							response_list.append(context4)
+					posts2 = Teacher_post.objects.filter(teacher_id_id = i.id)	
+					if posts2:
+						for j in posts2:
+							context4 = {}
+							context4['user_name']= j.teacher_user_id.first_name
+							context4['title'] = j.title
+							context4['description'] = j.description
+							context4['file']=j.file.name
+							context4['time_stamp']=j.time_stamp
+							response_list.append(context4)
+					posts3 = Employee_post.objects.filter(employee_id_id = i.id)	
+					if posts3:
+						for j in posts3:
+							context4 = {}
+							context4['user_name']= j.employee_user_id.first_name
+							context4['title'] = j.title
+							context4['description'] = j.description
+							context4['file']=j.file.name
+							context4['time_stamp']=j.time_stamp
+							response_list.append(context4)		
+			if student_objects:
+				for i in student_objects:
+					#print("this is used to append posts of student objects :", i.email)
+					#print("hello : ",i.id)
+					posts = Existing_student_post.objects.filter(student_id_id = i.id)
+					#print("posts of user :", posts)
+					if posts:
+						for j in posts:
+							context1 = {}
+							print("student id: ",j.student_id_id)
+							context1['user_name'] = j.student_user_id.first_name
+							context1['title'] = j.title
+							context1['description'] = j.description
+							context1['file']= j.file.name
+							context1['time_stamp'] = j.time_stamp
+							response_list.append(context1)
+					#		print("response list in studnets objects", response_list)
 			if graduate_objects:
-				print("got graduate record")
+				#print("got graduate record")
 				for i in graduate_objects:
-					posts = Future_student_post.objects.filter(future_student_id = i.id)
+					posts = Future_student_post.objects.filter(future_student_id_id = i.id)
 					if posts:
 						for j in posts:
 							context4 = {}
@@ -832,12 +1552,12 @@ class ExistingStudentDashboard(TemplateView):
 							context4['time_stamp']=j.time_stamp
 							response_list.append(context4)
 
-						print("it has posts")
+				#		print("it has posts")
 					else:
 						print("does not have posts")
 			if professor_objects:
 				for i in professor_objects:
-					posts = Teacher_post.objects.filter(teacher_id = i.id)
+					posts = Teacher_post.objects.filter(teacher_id_id = i.id)
 					if posts:
 						for j in posts:
 							context3 = {}
@@ -849,7 +1569,7 @@ class ExistingStudentDashboard(TemplateView):
 							response_list.append(context3)
 			if employee_objects:
 				for i in employee_objects:
-					posts = Employee_post.objects.filter(employee_id = i.id)
+					posts = Employee_post.objects.filter(employee_id_id = i.id)
 					if posts:
 						for j in posts:
 							context2 = {}
@@ -860,22 +1580,32 @@ class ExistingStudentDashboard(TemplateView):
 							context2['time_stamp'] = j.time_stamp
 							response_list.append(context2)		
 			else:
-				print("could not get graduate record")
-			print(obj.country)
-			print(obj.technical_subject)
-			print("this is student object")
+				print("could not get employee record")
+			#print(obj.country)
+			#print(obj.technical_subject)
+			#print("this is student object")
 		else:
 			print("empty object")
 	
 			response_list = sorted(response_list, key=lambda k: k['time_stamp'], reverse=True)
-
-			print('\n\n\n\n\n')
-			print('response_list:',response_list)
-
-
+			
+			#print('\n\n\n\n\n')
+			#print('response_list:',response_list)
 
 
+		
+		#print("length :",len(response_list))
+		#removing duplicate records in list
+		seen = {}
+		for i in response_list:
+			if i['title'] in seen.keys():
+				response_list.remove(i)
+			else:
+				seen[i['title']]=1	
+		print("comment list: ", comment_list)
+		#print("length :",len(response_list))
 		context['all_posts'] = response_list
+		context['comments'] = comment_list
 		return context
 
 class ExistingStudentAddPost(TemplateView):
@@ -1207,7 +1937,7 @@ class EmployeeProfile(TemplateView):
 		context = super(EmployeeProfile, self).get_context_data(*args, **kwargs)
 		print('user_id:',self.request.session['_auth_user_id'])
 		user_id = int(self.request.session['_auth_user_id'])
-		obj = User_Info.objects.filter(username_id=user_id).first()
+		obj = Employeeee.objects.filter(username_id=user_id).first()
 		if obj:
 			context['user_info'] = obj
 		return context
@@ -1959,7 +2689,7 @@ class Student_Registration(TemplateView):
 		country = request.POST.get('country')
 		technical_subject = request.POST.get('technical_subject')
 		student_type = request.POST.get('student_type')
-
+		
 
 		print(country)
 		print('\n\n\n\n\n')
@@ -1970,6 +2700,7 @@ class Student_Registration(TemplateView):
 			return HttpResponse('0')
 		else:
 			try:
+				
 				user = User.objects.create(username=email)
 				user.set_password(password)
 				user.save()
@@ -1979,9 +2710,13 @@ class Student_Registration(TemplateView):
 				user.save()
 				student_info = Students.objects.create(username_id=user.id,first_name=user.first_name,email=user.username,surname=surname,country_id=int(country),technical_subject_id = int(technical_subject), student_type_id = int(student_type))
 				student_info.save()
+		
 				return HttpResponse('1')
 			except Exception as e:
 				print('user error is :',e)
+				user = User.objects.filter(username=email)
+				print("user to be delete", user)
+				user.delete()
 				return HttpResponse('2')
 
 class Teacher_Registration(TemplateView):
@@ -2064,59 +2799,38 @@ class Login(TemplateView):
 	def post(self,request):
 		username = request.POST.get('username')
 		password = request.POST.get('password')
-		user_type = request.POST.get('user_type')
+		
 		print('username:',username)
 		print('password:',password)
-		print('user_type:',user_type)
+		users = User.objects.all()
+		print('all users :', users)
 		user = authenticate(username=username, password=password)
-		print("user id: ",user.id)
+		
+		#print("user id: ",user.id)
 		if user:
 			if user.is_superuser == True:
 				return HttpResponse('0')
 			else:
-				if user_type == "student":
-					print("user_type :",user_type)
-					obj = Students.objects.filter(username_id=int(user.id)).first()
-					if obj:
-						login(request, user)
-						return HttpResponse('1')
-					else:
-						return HttpResponse('6')
 
-
-
-				if user_type == "graduate":
-					print("user_type :",user_type)
-					obj = Graduate.objects.filter(username_id=int(user.id)).first()
-					if obj:
-						login(request, user)
-						return HttpResponse('2')
-					else:
-						return HttpResponse('6')
-
-				if user_type == "professor" :
-					print("user_type :",user_type)
-					obj = Professor.objects.filter(username_id=int(user.id)).first()
-					print('this is obj', obj)
-					if obj:
-						login(request, user)
-						print("This is professor ")
-						return HttpResponse('3')
-					else:
-						return HttpResponse('6')
-
-
-				if user_type == "employee":
-					print("user_type :",user_type)
-					obj = Employeeee.objects.filter(username_id=int(user.id)).first()
-					
-					if obj:
-						login(request, user)
-						return HttpResponse('4')
-					else:
-						return HttpResponse('6')
-
-				
+				obj1 = Students.objects.filter(username_id = int(user.id)).first()
+				obj2 = Graduate.objects.filter(username_id = int(user.id)).first()
+				obj3 = Professor.objects.filter(username_id = int(user.id)).first()
+				obj4 = Employeeee.objects.filter(username_id = int(user.id)).first()
+				print("obj1 student: ", obj1)
+				if obj1:
+					login(request, user)
+					return HttpResponse('1')
+				elif obj2: 
+					login(request, user)
+					return HttpResponse('2')
+				elif obj3:
+					login(request, user)
+					return HttpResponse('3')
+				elif obj4:
+					login(request, user)
+					return HttpResponse('4')
+				else:
+					return HttpResponse('6')
 
 		else:
 			return HttpResponse('7')
@@ -2136,29 +2850,25 @@ class ForgotPassword(TemplateView):
 			user.set_password(newpass)
 			user.save()
 			print('saved new.')
-			sender = 'itsmepython21@gmail.com'
+			sender = 'sarmad1305@gmail.com'
 			receiver = username
 			message = 'Hello '+str(user.first_name)+ ' Your New Password is -' +str(newpass)
 			try:
 				server = smtplib.SMTP('smtp.gmail.com', 587)
 				server.starttls()
-				server.login('itsmepython21@gmail.com', 'esfera0143')
+				server.login('sarmad1305@gmail.com', 'hzdxyvyhuueceyon')
 				msg = EmailMessage()
 				msg.set_content(message)
 				msg['Subject'] = 'NEW PASSWORD'
-				msg['From'] = 'itsmepython21@gmail.com'
+				msg['From'] = 'sarmad1305@gmail.com'
 				msg['To'] = str(receiver)
 				server.send_message(msg) 
 				print('sent...')      
 				return HttpResponse('1')
 			except Exception as e:
+				print("stmp error message :",e)
 				return HttpResponse('2')
 		else:
 			return HttpResponse('0')
 
 ######################Other Funtions########################
-
-
-
-
-

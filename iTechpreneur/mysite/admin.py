@@ -2,11 +2,13 @@ from django.contrib import admin
 from .models import *
 
 # Register your models here.
+admin.site.register(Comment)
 admin.site.register(Employeeee)
 admin.site.register(Professor)
 admin.site.register(Graduate)
 admin.site.register(StudentType)
 admin.site.register(TechnicalSubject)
+admin.site.register(StudentFollowing)
 #admin.site.register(Subjects)
 #admin.site.register(Skills)
 #admin.site.register(Industry)

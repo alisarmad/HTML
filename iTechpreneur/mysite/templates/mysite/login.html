@@ -52,31 +52,7 @@
                 
                 </div>
 
-                <div class="login-as">
-                  <label for="exampleInputEmail1">Login as : </label><br>
-
-                  <div class="form-check-inline">
-                    <label class="form-check-label">
-                      <input type="radio" class="form-check-input" id="user_type" name="user_type" value="student">Student
-                    </label>
-                  </div>
-                  <div class="form-check-inline">
-                    <label class="form-check-label">
-                      <input type="radio" class="form-check-input" id="user_type" name="user_type" value="graduate">Graduate
-                    </label>
-                  </div>
-                  <div class="form-check-inline">
-                    <label class="form-check-label">
-                      <input type="radio" class="form-check-input" id="user_type" name="user_type" value="professor">Professor
-                    </label>
-                  </div>
-                  <div class="form-check-inline">
-                    <label class="form-check-label">
-                      <input type="radio" class="form-check-input" id="user_type" name="user_type" value="employee">Employee
-                    </label>
-                  </div>
-                  <p id="user_type_error"></p>
-                </div>
+              
 
                 <button type="button" class="btn btn-yellow" id="login_btn">Signin</button>
                
@@ -84,7 +60,7 @@
                 <div class="forgot-pass">
                   
                     <p>Don't have an account? <a href="/#register">Register Here</a></p>
-                    <p><a href="{% url 'mysite:forgot' %}">Forgot Password</a></p>
+                    <p><a href="{% url 'password_reset' %}">Forgot Password</a></p>
                 </div>
               </form>
         </div>

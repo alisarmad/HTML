@@ -2,10 +2,15 @@ from django.urls import path
 
 from .views import *
 
+
+
 app_name = 'mysite'
 
 urlpatterns = [
 	path('',Home.as_view(),name='home'),
+
+	
+
 	path('student_registration/',Student_Registration.as_view(),name='student_registration'),
 	
 	# Graduate registration is specified in Future_Registration View 
@@ -25,6 +30,7 @@ urlpatterns = [
 #Graduate 
 	path('future-dashboard/',FutureDashboard.as_view(),name='future-dashboard'),
 	path('future-profile/',FutureProfile.as_view(),name='future-profile'),
+	path('future-explore/', GraduateExplore.as_view(), name ='future-explore'),
 	path('future-edit-profile/',FutureEditProfile.as_view(),name='future-edit-profile'),
 	path('future-search-program/',FutureSearchProgram.as_view(),name='future-search-program'),
 	path('future-academics-search/',Future_Search_Result.as_view(),name='future-academics-search'),
@@ -42,6 +48,7 @@ urlpatterns = [
 	path('existing-profile/',ExistingStudentProfile.as_view(),name='existing-profile'),
 	path('existing-notification/',ExistingStudentNotification.as_view(),name='existing-notification'),
 	path('existing-search/',ExistingStudentSearch.as_view(),name='existing-search'),
+	path('existing-explore/', ExistingExplore.as_view(), name ='existing-explore'),
 	path('existing-following-employee/',ExistingStudentFollowingEmployees.as_view(),name='existing-following-employee'),
 	path('existing-add-post/',ExistingStudentAddPost.as_view(),name='existing-add-post'),
 
@@ -50,6 +57,7 @@ urlpatterns = [
 #Professsor 
 	path('teacher-dashboard/',TeacherDashboard.as_view(),name='teacher-dashboard'),
 	path('teacher-profile/',TeacherProfile.as_view(),name='teacher-profile'),
+	path('teacher-explore/', ProfessorExplore.as_view(), name ='teacher-explore'),
 	path('teacher-search-future/',TeacherSearchFuture.as_view(),name='teacher-search-future'),
 	path('teacher-search-exist/',TeacherSearchExist.as_view(),name='teacher-search-exist'),
 	path('teacher-add-post/',TeacherAddPost.as_view(),name='teacher-add-post'),
@@ -68,7 +76,6 @@ urlpatterns = [
 	path('employee-student-delete-notification/<int:id1>/',student_employee_delete_notification,name='employee-student-delete-notification'),
 	path('student_employee_accept_notification/<int:id1>/<int:id2>/',student_employee_accept_notification,name='student_employee_accept_notification'),
 	path('student_employee_unfollow_notification/<int:id1>/<int:id2>/',student_employee_unfollow_notification,name='student_employee_unfollow_notification'),
-
 
 
 	#path('existing-employee-dashboard/',ExistingEmployeeDashboard.as_view(),name='existing-employee-dashboard'),
