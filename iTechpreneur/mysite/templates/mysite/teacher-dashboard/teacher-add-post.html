@@ -88,19 +88,6 @@
 
 
 
-    </div>
-
-    
-
-
-  </div>
-
-</section>
-
-
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-  <script src="{% static 'mysite/js/bootstrap.min.js' %}"></script>
   <script type="text/javascript">
   $("#teacher-post-submit").submit(function(e){
         e.preventDefault();
@@ -136,8 +123,6 @@
           return false;
         }
 
-
-
         $('#teacher-post-submit')[0].submit();
     });
 </script>
@@ -162,7 +147,7 @@
 <script type="text/javascript">
   function function_remove3(){
     console.log('dddd')
-                if($('#upload_file').val())
+        if($('#upload_file').val())
         {
            $('#upload_file_error').text('')
         }
@@ -170,8 +155,6 @@
 
 </script>
 
-</body>
-</html>
 {% endblock %}
 
 

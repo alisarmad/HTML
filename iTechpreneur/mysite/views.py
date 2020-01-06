@@ -18,6 +18,8 @@ import os,random,string
 import json
 from django.core import serializers
 from django.core.mail import send_mail
+from django.http import JsonResponse 
+
 
 
 class Home(TemplateView):
@@ -515,9 +517,9 @@ class EmployeeExplore(TemplateView):
 		logged_user = Students.objects.filter(username_id = user_id).first()
 		if logged_user is None:
 			logged_user = Graduate.objects.filter(username_id = user_id).first()
-		elif logged_user is None:
+		if logged_user is None:
 			logged_user = Professor.objects.filter(username_id = user_id).first()
-		elif logged_user is None:
+		if logged_user is None:
 			logged_user = Employeeee.objects.filter(username_id = user_id).first()
 		
 		followers_objects = StudentFollowing.objects.all()
@@ -1316,40 +1318,22 @@ class TeacherAddPost(TemplateView):
 		return context
 
 	def post(self,request):
-		print('in teacher post')
+		print('in add employee post')
 		print('data:',request.POST)
-		print('file data:',request.FILES)
-
 		title = request.POST.get('post_title')
 		description = request.POST.get('post_text')
-		user_id = request.POST.get('user_id')
-		file = request.FILES.get('upload_file')
-		obj = Professor.objects.filter(username_id=int(user_id)).first()
-		print("Teacher object",obj)
-		teacher_id = int(obj.id)
-		teacher_user_id = int(user_id)
-		obj1 = Teacher_post.objects.create(title=title,description=description,file=file,teacher_id_id=teacher_id,teacher_user_id_id=teacher_user_id)
-		obj1.save()
-		print('teacher post saved.')
+		file = request.FILES['upload_file']
+		user_id = int(self.request.session['_auth_user_id'])
+		print("teacher user id", user_id	)
+		ss_id = Professor.objects.filter(username_id=int(user_id)).first()
+		print("Professor",ss_id.id)
+		obj = Teacher_post.objects.create(teacher_id_id=int(ss_id.id),teacher_user_id_id=user_id,title=title,description=description,file=file)
+		obj.save()
+		print('Professor student post saved.')
 		context={}
 		user_id = int(self.request.session['_auth_user_id'])
 		response_list = []
-		obj = Teacher_post.objects.filter(teacher_user_id_id=user_id)
-		ids = list(TeacherFutureMapping.objects.filter(teacher_user_id_id=int(user_id)).values_list('connected_future_student_id',flat=True))
-		if ids:
-			for i in ids:
-				obj2 = Future_student_post.objects.filter(future_student_user_id_id=int(i))
-				for k in obj2:
-					context1 ={}
-					context1['user_name'] = k.future_student_user_id.first_name
-					context1['title'] = k.title
-					context1['description'] = k.description
-					context1['file'] = k.file.name
-					context1['time_stamp'] = k.time_stamp
-
-				response_list.append(context1)
-
-
+		obj = Teacher_post.objects.filter(teacher_user_id_id=int(user_id))
 		if obj:
 			for j in obj:
 				context1 ={}
@@ -1359,7 +1343,7 @@ class TeacherAddPost(TemplateView):
 				context1['file'] = j.file.name
 				context1['time_stamp'] = j.time_stamp
 
-			response_list.append(context1)
+				response_list.append(context1)
 			print('before:',response_list)
 
 			response_list = sorted(response_list, key=lambda k: k['time_stamp'], reverse=True)
@@ -1427,64 +1411,50 @@ class ExistingStudentDashboard(TemplateView):
 	template_name = ('mysite/existing-dashboard/existing-dashboard.html')
 	def get_context_data(self, *args, **kwargs):
 		context = super(ExistingStudentDashboard, self).get_context_data(*args, **kwargs)
-		print('user_id:',self.request.session['_auth_user_id'])
+		#print('user_id:',self.request.session['_auth_user_id'])
 		user_id = int(self.request.session['_auth_user_id'])
-		print("user id on dashboard :" , user_id)
+		#print("user id on dashboard :" , user_id)
 		response_list = []
 		comment_list = []
+		contact_list = []
+		user = User.objects.filter(id = user_id).first()
+		print("user :", user)
+		
+
 		posts5 = Existing_student_post.objects.all()
-		print("student posts :",posts5)
+		#print("student posts :",posts5)
 		#retrieve logged in student country and technical subject from database
-		comments = Comment.objects.all() 
+		#comments = Comment.objects.all() 
 		obj = Students.objects.filter(username_id=int(user_id)).first()
 		if obj:
 			student_objects = Students.objects.filter(country = obj.country, technical_subject=obj.technical_subject)
 			graduate_objects = Graduate.objects.filter(country=obj.country, technical_subject=obj.technical_subject)
 			professor_objects = Professor.objects.filter(country = obj.country, technical_subject = obj.technical_subject)
 			employee_objects  = Employeeee.objects.filter(country = obj.country, technical_subject = obj.technical_subject)
-			follow_users = StudentFollowing.objects.all()
-			if comments:
+			if student_objects:
+				for i in student_objects:
+					contact = {}
+					contact['first_name'] = i.first_name
+					contact['surname'] = i.surname
+					contact['email'] = i.email
+					contact_list.append(contact)
+			print("contact list", contact_list)
 
-				for i in comments:
-					student_comment = Students.objects.filter(email = i.user_id).first()
-					graduate_comment = Graduate.objects.filter(email = i.user_id).first()
-					professor_comment = Professor.objects.filter(email = i.user_id).first()
-					employee_comment = Employeeee.objects.filter(email = i.user_id).first()
-					
-					print("student comment object: ",student_comment.first_name, student_comment.surname)
-					print("graduate comment object: ",graduate_comment)
-					print("professor comment object: ",professor_comment)
-					print("employee comment object: ",employee_comment)
-					
-					context7 = {}
-					if student_comment:
-						context7['commenter_first_name'] = student_comment.first_name 
-						context7['commenter_sur_name'] = student_comment.surname 
-					elif graduate_comment:
-						context7['commenter_first_name'] = graduate_comment.first_name 
-						context7['commenter_sur_name'] = graduate_comment.surname 
-					elif professor_comment:
-						context7['commenter_first_name'] = professor_comment.first_name 
-						context7['commenter_sur_name'] = professor_comment.surname 
-					elif employee_comment:
-						context7['commenter_first_name'] = employee_comment.first_name 
-						context7['commenter_sur_name'] = employee_comment.surname 
-						
-					context7['comment_user_id'] = i.user_id
-					context7['comment_text'] = i.comment_text
-					context7['post_id'] = i.post_id
-					print("comment user id",i.user_id)
-					print("comment post id", i.post_id)
-					print("comment post text ", i.comment_text)
-					comment_list.append(context7)
+			follow_users = StudentFollowing.objects.all()
+			
 			#print("follow users :", follow_users)
 			#print("students objects ", student_objects)
+
 			if follow_users:
 				for i in follow_users:
 					posts = Existing_student_post.objects.filter(student_id_id = i.id)
 					if posts:
 						for j in posts:
+							post_comments = Comment.objects.filter(post_id = j.id)
+							print("post comments: ", post_comments)
 							context1 = {}
+							context1['user_id'] = user
+							context1['post_id'] = j.id
 							context1['user_name'] = j.student_user_id.first_name
 							context1['title'] = j.title
 							context1['description'] = j.description
@@ -1494,7 +1464,11 @@ class ExistingStudentDashboard(TemplateView):
 					posts1 = Future_student_post.objects.filter(future_student_id_id = i.id)	
 					if posts1:
 						for j in posts1:
+							post_comments = Comment.objects.filter(post_id = j.id)
+							print("post comments: ", post_comments)
 							context4 = {}
+							context4['user_id'] = user
+							context4['post_id'] = j.id
 							context4['user_name']= j.future_student_user_id.first_name
 							context4['title'] = j.title
 							context4['description'] = j.description
@@ -1504,7 +1478,11 @@ class ExistingStudentDashboard(TemplateView):
 					posts2 = Teacher_post.objects.filter(teacher_id_id = i.id)	
 					if posts2:
 						for j in posts2:
+							post_comments = Comment.objects.filter(post_id = j.id)
+							print("post comments: ", post_comments)
 							context4 = {}
+							context4['user_id'] = user
+							context4['post_id'] = j.id
 							context4['user_name']= j.teacher_user_id.first_name
 							context4['title'] = j.title
 							context4['description'] = j.description
@@ -1514,7 +1492,11 @@ class ExistingStudentDashboard(TemplateView):
 					posts3 = Employee_post.objects.filter(employee_id_id = i.id)	
 					if posts3:
 						for j in posts3:
+							post_comments = Comment.objects.filter(post_id = j.id)
+							print("post comments: ", post_comments)
 							context4 = {}
+							context4['user_id'] = user
+							context4['post_id'] = j.id
 							context4['user_name']= j.employee_user_id.first_name
 							context4['title'] = j.title
 							context4['description'] = j.description
@@ -1529,8 +1511,49 @@ class ExistingStudentDashboard(TemplateView):
 					#print("posts of user :", posts)
 					if posts:
 						for j in posts:
+
+							print("post id: within student objects :",j.id)
+							post_comments = Comment.objects.filter(post_id = j.id)
+							if post_comments:
+								for k in post_comments:
+									student_comment = Students.objects.filter(email = k.user_id).first()
+									graduate_comment = Graduate.objects.filter(email = k.user_id).first()
+									professor_comment = Professor.objects.filter(email = k.user_id).first()
+									employee_comment = Employeeee.objects.filter(email = k.user_id).first()
+									
+									#rint("student comment object: ",student_comment.first_name, student_comment.surname)
+									#print("graduate comment object: ",graduate_comment)
+									#print("professor comment object: ",professor_comment)
+									#print("employee comment object: ",employee_comment)
+									
+									context7 = {}
+									if student_comment:
+										print("student comment: ", student_comment)
+										context7['commenter_first_name'] = student_comment.first_name 
+										context7['commenter_sur_name'] = student_comment.surname 
+									elif graduate_comment:
+										context7['commenter_first_name'] = graduate_comment.first_name 
+										context7['commenter_sur_name'] = graduate_comment.surname 
+									elif professor_comment:
+										context7['commenter_first_name'] = professor_comment.first_name 
+										context7['commenter_sur_name'] = professor_comment.surname 
+									elif employee_comment:
+										context7['commenter_first_name'] = employee_comment.first_name 
+										context7['commenter_sur_name'] = employee_comment.surname 
+										
+									context7['comment_user_id'] = k.user_id
+									context7['comment_text'] = k.comment_text
+									context7['post_id'] = int(k.post_id)
+									#print("comment user id",i.user_id)
+									#print("comment post id", i.post_id)
+									#print("comment post text ", i.comment_text)
+									comment_list.append(context7)
+							print("post comments: ", post_comments)
+							print("post id : ",j.id)
 							context1 = {}
+							context1['user_id'] = user
 							print("student id: ",j.student_id_id)
+							context1['post_id'] = int(j.id)
 							context1['user_name'] = j.student_user_id.first_name
 							context1['title'] = j.title
 							context1['description'] = j.description
@@ -1544,7 +1567,11 @@ class ExistingStudentDashboard(TemplateView):
 					posts = Future_student_post.objects.filter(future_student_id_id = i.id)
 					if posts:
 						for j in posts:
+							post_comments = Comment.objects.filter(post_id = j.id)
+							print("post comments: ", post_comments)
 							context4 = {}
+							context4['user_id'] = user
+							context4['post_id'] = j.id
 							context4['user_name']= j.future_student_user_id.first_name
 							context4['title'] = j.title
 							context4['description'] = j.description
@@ -1561,6 +1588,8 @@ class ExistingStudentDashboard(TemplateView):
 					if posts:
 						for j in posts:
 							context3 = {}
+							context3['user_id'] = user
+							context3['post_id'] = j.id
 							context3['user_name']= j.teacher_user_id.first_name
 							context3['title']= j.title
 							context3['description'] = j.description
@@ -1573,6 +1602,8 @@ class ExistingStudentDashboard(TemplateView):
 					if posts:
 						for j in posts:
 							context2 = {}
+							context2['user_id'] = user.username
+							context2['post_id'] = j.id
 							context2['user_name'] = j.employee_user_id.first_name
 							context2['title'] = j.title
 							context2['description'] = j.description
@@ -1602,11 +1633,37 @@ class ExistingStudentDashboard(TemplateView):
 				response_list.remove(i)
 			else:
 				seen[i['title']]=1	
-		print("comment list: ", comment_list)
+		#print("comment list: ", comment_list)
 		#print("length :",len(response_list))
+		context['contacts'] = contact_list
 		context['all_posts'] = response_list
 		context['comments'] = comment_list
 		return context
+	def post(self, request):
+		print("this function is for submitting comments.")
+		#response_data = {}
+		
+		comment_text = request.POST.get('comment_text')
+		print("comment text from form", comment_text)
+		post_id = request.POST.get('post_id')
+		user_id = int(self.request.session['_auth_user_id'])
+		
+		user = User.objects.filter(id = user_id).first()
+		ss_id = Students.objects.filter(username_id=int(user_id)).first()
+		#response_data['comment_text'] = comment
+		#response_data['user_id'] = user
+		#response_data['post_id'] = post_id
+		print("user :::", user.username)
+		if ss_id:
+			obj = Comment.objects.create(user_id = user , comment_text = comment_text, post_id = post_id)
+			obj.save()
+			#return JsonResponse(response_data)
+		comments = Comment.objects.all()
+		return render(request, 'mysite/existing-dashboard/existing-dashboard.html',{'comments': comments} )
+
+
+
+
 
 class ExistingStudentAddPost(TemplateView):
 	template_name = ('mysite/existing-dashboard/existing-add-post.html')
@@ -1632,22 +1689,6 @@ class ExistingStudentAddPost(TemplateView):
 		user_id = int(self.request.session['_auth_user_id'])
 		response_list = []
 		obj = Existing_student_post.objects.filter(student_user_id_id=int(user_id))
-		obj1 = StudentEmployeeMapping.objects.filter(student_user_id_id=int(user_id)).values_list('connected_employee_user_id_id',flat=True)
-		if obj1:
-			for i in obj1:
-				objj = Employee_post.objects.filter(employee_user_id_id=int(i))
-				if objj:
-					for k in objj:
-						context1 ={}
-						context1['user_name'] = k.employee_user_id.first_name
-						context1['title'] = k.title
-						context1['description'] = k.description
-						context1['file'] = k.file.name
-						context1['time_stamp'] = k.time_stamp
-
-						response_list.append(context1)
-
-
 		if obj:
 			for j in obj:
 				context1 ={}

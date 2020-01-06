@@ -68,6 +68,7 @@ urlpatterns = [
 #employee 
 	path('employee-dashboard/',EmployeeDashboard.as_view(),name='employee-dashboard'),
 	path('employee-profile/',EmployeeProfile.as_view(),name='employee-profile'),
+	path('employee-explore/', EmployeeExplore.as_view(), name ='employee-explore'),
 	path('employee-notification/',EmployeeNotification.as_view(),name='employee-notification'),
 	path('employee-search-student/',EmployeeSearchStudent.as_view(),name='employee-search-student'),
 	path('employee-student-following/',EmployeeStudentFollowing.as_view(),name='employee-student-following'),

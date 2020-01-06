@@ -1,7 +1,6 @@
 {% extends 'mysite/future-dasboard/future-main.html' %}
 {% load static %}
 {% block content %}
-
         <div class="wrapper-data">
           <div class="row">
             <div class="col-12 left-data">
@@ -20,35 +19,34 @@
                         <div class="col-sm-8 profile-right">
                             <div class="name-dtl">
                               <h1 class="name">{{ user_info.first_name }}  {{ user_info.surname }}</h1>
-                              <p class="place">Graduate</p>
-                              <!-- <a href="{% url 'mysite:future-edit-profile'%}" class="btn btn-sm-dark"><i class="fas fa-edit"></i> Edit</a> -->
+                              <p class="place">Student</p>
+                              <!-- <a href="{% url 'mysite:teacher-edit-post' %}" class="btn btn-sm-dark"><i class="fas fa-edit"></i> Edit</a> -->
                             </div>
 
                             <div class="contact-dtl">
                               <h1 class="hdg">contact information</h1>
+                              
                               <div class="row">
-                                <div class="col-5 left-name">Email</div>
+                                <div class="col-5 left-name">Email: </div>
                                 <div class="col-7 rgt-dtl">{{ user_info.email }}</div>
                               </div>
 
-                              <div class="row">
+                              
+                               <div class="row">
                                 <div class="col-5 left-name">Location</div>
-                                <div class="col-7 rgt-dtl">
-                                    <p>{{ user_info.country.name }}</p>
-                                </div>
+                                <div class="col-7 rgt-dtl"><p>{{ user_info.country.name }}</p></div>
                               </div>
+
 
                               <div class="row">
                                 <div class="col-5 left-name">Technical Subject</div>
-                                <div class="col-7 rgt-dtl"><span class="badge badge-info">{{ user_info.technical_subject }}</span></div>
+                                <div class="col-7 rgt-dtl"><p>{{ user_info.technical_subject }}</p></div>
                               </div>
 
                             </div>
 
-                        {% endif %}
-
-
                         </div>
+                        {% endif %}
                       </div>
                   </div>
               </div>
@@ -62,21 +60,7 @@
 
 
 
-    </div>
 
-    
-
-
-  </div>
-
-</section>
-
-
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-  <script src="{% static 'mysite/js/bootstrap.min.js' %}"></script>
-
-</body>
-</html>
 {% endblock %}
+
 

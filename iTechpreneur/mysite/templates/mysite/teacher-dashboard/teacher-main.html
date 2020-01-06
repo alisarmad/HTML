@@ -2,11 +2,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Teen TechPreneur</title>
+  <title>Younii</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css">
+  <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <link rel="stylesheet" href="{% static 'mysite/css/bootstrap.min.css' %}">
   <link rel="stylesheet" href="{% static 'mysite/css/style.css' %}">
   <link rel="stylesheet" href="{% static 'mysite/css/dashboard-style.css' %}">
@@ -14,46 +16,37 @@
 <body>
 
 <section class="layout-main">
-  <div class="sidebar">
-    <div class="sidebar-inner">
-        <div class="logo-bar">
-          <a href="">
-            <img src="{% static 'mysite/images/logo.png' %}" />
-          </a>
-        </div>
-        <div class="menu-bar">
-          <ul class="main-menu">
-            <li class="active">
-              <a href="{% url 'mysite:teacher-dashboard' %}" ><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a>
-            </li>
-            <li>
-              <a href="{% url 'mysite:teacher-profile' %}" ><i class="fas fa-user"></i> <span>Profile</span></a>
-            </li>
-            <li>
-              <a href="{% url 'mysite:teacher-explore' %}" ><i class="fas fa-graduation-cap"></i> <span>Explore</span></a>
-            </li>
-<!--             <li>
-              <a href="{% url 'mysite:teacher-search-exist' %}" ><i class="fas fa-graduation-cap"></i> <span>Search Existing Student</span></a>
-            </li> -->
-            <li>
-              <a href="{% url 'mysite:teacher-add-post' %}" ><i class="fas fa-edit"></i> <span>Add Post</span></a>
-            </li>
-<!--             <li>
-              <a href="#" ><i class="fas fa-envelope"></i> <span>Messaging</span></a>
-            </li> -->
-          </ul>
-        </div>
-    </div>
-  </div>
+  <!--
 
-  <div class="content-wrapper">
+-->
+  <div class="content-wrapper ">
     <div class="wrapper-inner">
+      <div class="container">
         <div class="top-bar">
-          <div class="bar-left">
+         
+            <div class="bar-left">
               <div class="form-group form-parts mb-0">
                 <!-- <input type="text" class="form-control" placeholder="Search here..."> -->
+                <div class="logo-bar">
+                  <a href="">
+                    <img src="{% static 'mysite/images/logo.png' %}" />
+                  </a>
+                </div>
               </div>
-          </div>
+            </div>
+            <button class="navbar-toggler " type="button">
+              <span class="navbar-toggler-icon text-center" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> </span>
+            
+              <div class="dropdown-menu dropdown-menu-center" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="{% url 'mysite:teacher-dashboard' %}" ><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="{% url 'mysite:teacher-profile' %}" ><i class="fas fa-user"></i> <span>Profile</span></a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="{% url 'mysite:teacher-explore' %}" ><i class="fas fa-graduation-cap"></i> <span>Explore</span></a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="{% url 'mysite:teacher-add-post' %}" ><i class="fas fa-graduation-cap"></i> <span>Add Post</span></a>
+              </div>
+            </button>
 
           <div class="bar-right">
             <div class="dropdown profile-drop">
@@ -64,13 +57,117 @@
                 <div class="for-des"></div>
               </button>
               <div class="dropdown-menu">
+              <a class="dropdown-item" href="{% url 'password_change' %}">Change Password</a>
               <a class="dropdown-item" href="{% url 'mysite:logout' %}">Logout</a>
-              </div>
+                
             </div>
-          </div>
+              
+              
+           
         </div>
 
-        {% block content %}
-        {% endblock %}
 
- 
+
+
+      </div>
+    </div>
+  </div>
+    </div>
+    </div>
+
+    <!-- Left Navigation and Right Navigation Bar and Posts and other stuff in middle-->
+
+    <div class="container mt-5 navbar-wrapper">
+      <div class="row ">
+        <div class="col-2 nav-wrapper">
+          <div class="menu-bar">
+            <ul class="main-menu">
+              <li>
+                <a href="{% url 'mysite:teacher-dashboard' %}" ><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a>
+              </li>
+              <li>
+                <a href="{% url 'mysite:teacher-profile' %}" ><i class="fas fa-user"></i> <span>Profile</span></a>
+              </li>
+              <li>
+                <a href="{% url 'mysite:teacher-explore' %}" ><i class="fas fa-graduation-cap"></i> <span>Explore</span></a>
+              </li>
+              <li class="">
+                <a href="{% url 'mysite:teacher-add-post' %}" ><i class="fas fa-graduation-cap"></i> <span>Add Post</span></a>
+              </li>
+             
+            </ul>
+          </div>
+        </div>
+        <div class="col-7 post-wrapper">
+          
+          {% block content %}
+          {% endblock %}
+          
+        </div>
+        <div class="col-2 contact-wrapper">
+          hello how are 
+        </div>
+      </div>
+    </div>
+
+  </section>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="{% static 'mysite/js/bootstrap.min.js' %}"></script>
+
+    <script>
+     function resizing(){
+       
+          if($(window).width()<1000 && $(window).width()>550){
+              $('.navbar-toggler').hide();
+              $('.contact-wrapper').hide();
+              $('.post-wrapper').removeClass("col-7");
+              $('.post-wrapper').removeClass("col-12");
+              $('.post-wrapper').addClass("col-9");
+              $('.comment-text').removeClass("col-md-4");
+              $('.comment-text').addClass("col-md-8");
+
+            
+
+          }
+          else if($(window).width()<550){
+              $('.navbar-toggler').show();
+              $('.nav-wrapper').hide();
+              $('.contact-wrapper').hide();
+              $('.post-wrapper').removeClass("col-7");
+              $('.post-wrapper').removeClass("col-9");
+              $('.post-wrapper').addClass("col-12");
+              $('.col-12').css("padding-right","0px");
+              $('.col-12').css("padding-left","0px");
+              $('.wrapper-data').css("padding","0px");
+              $('.post-wrapper').css("left","0");
+              $('.comment-text').removeClass("col-md-8");
+              $('.comment-text').addClass("col-md-4");
+              
+
+          }
+          else{
+              $('.navbar-toggler').hide();
+              $('.contact-wrapper').show();
+              $('.nav-wrapper').show();
+              $('.post-wrapper').removeClass("col-9");
+              $('.post-wrapper').addClass("col-7");
+              $('.post-wrapper').removeClass("col-12");
+              $('.post-wrapper').css("left","20%"); 
+              $('.col-12').css("padding-right","15px");
+              $('.col-12').css("padding-left","15px");
+              $('.wrapper-data').css("padding","20px");
+              $('.comment-text').removeClass("col-md-4");
+              $('.comment-text').addClass("col-md-8");
+
+
+        }
+    
+    }
+
+    resizing(); // Call when page is loaded
+    $(window).resize( resizing);
+    </script>
+</body>
+
+</html>

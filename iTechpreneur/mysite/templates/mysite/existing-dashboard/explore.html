@@ -45,7 +45,7 @@
         </div>
     </div>
     
-{% endblock %}
+
 <script>
 
   $('form').on('submit', function(e){
@@ -89,41 +89,6 @@
     console.log("after ajax")
   })
 
-  /*
-  $(document).on('click', '#follow', function(e){  
-
-      console.log("event: ",e)
-      var input = document.getElementsByTagName('input')[0].name;
-
-      console.log("input ",input);
-      
-      var token=$('input[name="csrfmiddlewaretoken"]').val();
-     
-
-      console.log("follow clicked")
-      console.log('before ajax')
-      $.ajax({
-          url: '/explore/',
-          type: "POST",
-          data: { 'following_email': following_email, 'follower_email':follower_email,'csrfmiddlewaretoken':token },
-          dataType: 'json',
-          cache: false,
-          success: function(response){
-              if( response =='1'){
-                  console.log("response",response)
-                  $("#follow").html("Unfollow");
-                  
-              }
-              else{
-                  console.log(response)
-                  return false
-              }
-          }
-
-      });
-      console.log("after ajax")
-    });
-    */
 </script>
       <style>
         .main-box.no-header {
@@ -188,9 +153,4 @@
           padding: 12px 8px;
       }
       </style>
-
-   <script src="{% static 'mysite/js/bootstrap.min.js' %}"></script>
-<script src="{% static 'mysite/css/style.css' %}"></script>
-
-</body>
-</html>
+      {% endblock %}

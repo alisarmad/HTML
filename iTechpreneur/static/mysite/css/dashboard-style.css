@@ -78,7 +78,9 @@
 
 .contact-wrapper{
     position: fixed;
+    max-height: 100%;
     right: 0;
+    overflow-y: scroll;
 }
 
 .layout-main .logo-bar a{
@@ -773,6 +775,4 @@
     font-weight: 300;
     line-height: 20px;
 }
-
-
 

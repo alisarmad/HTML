@@ -284,13 +284,13 @@ class Future_connections(models.Model):
 # Comments Model
 class Comment(models.Model):
 	user_id = models.ForeignKey(User, on_delete= models.CASCADE)
-	comment_text = models.TextField(blank=True, null = True)
+	comment_text = models.CharField(max_length=500)
 	post_id = models.CharField(max_length=200)
 	time_stamp = models.DateTimeField(auto_now = True)
 
 
 class Teacher_post(models.Model):
-	teacher_id = models.ForeignKey(Teacher,on_delete=models.CASCADE)
+	teacher_id = models.ForeignKey(Professor,on_delete=models.CASCADE)
 	teacher_user_id = models.ForeignKey(User,on_delete=models.CASCADE)
 	title = models.CharField(max_length=200)
 	description = models.TextField(blank=True, null=True)

@@ -1,67 +1,112 @@
 {% extends 'mysite/future-dasboard/future-main.html' %}
 {% load static %}
 {% block content %}
-        
-        <div class="wrapper-data">
-          <div class="row">
-          {% if all_posts %}
-        
-          {% for i in all_posts %}
-            <div class="col-8 left-data">
-             
-              <div class="post-box">
-                <div class="box-widget">
-                  <div class="box-header with-border">
-                    <div class="user-block">
-                      <img class="img-circle" src="{% static 'mysite/images/avatar.png' %}">
-                      
-                      <span class="username"><a href="#">{{ i.user_name }}</a></span>
-                      <span class="description">Shared at -  {{ i.time_stamp }}</span>
-                    </div>
-                  </div>
-                </div>
-                <p>Title:  {{ i.title }}</p>
-                <div class="box-body">
-                {% if i.file %}
-                  <img class="img-fluid pad" src="/media/{{ i.file }}" alt="Photo">
-                {% endif %}                  
-                  <p>Description: {{ i.description }}</p>
-              </div>
-
-            </div>
-            
-
-  
+{% if all_posts %}
+<div class="wrapper-data">
 
 
+  {% for i in all_posts %}
 
-            </div>
-            {% endfor %}
-            {% else %}
-                <p>No Posts Right Now.</p>
-                {% endif %}
-          </div>
+  <div class="post-box">
+    <div class="box-widget">
+      <div class="box-header with-border">
+        <div class="user-block">
+          <img class="img-circle" src="{% static 'mysite/images/avatar.png' %}">
+          <span class="username"><a href="#">{{ i.user_name }}</a></span>
+          <span class="description">{{ i.time_stamp }}</span>
         </div>
+      </div>
+    </div>
+    <p class="title">{{ i.title }}</p>
+    <div class="box-body">
+      {% if i.file %}
+      <img class="img-fluid pad" src="/media/{{ i.file }}" alt="Photo">
+      {% endif %}
+      <p class="post-description">{{ i.description }}</p>
+    </div>
+    <div class="btn-group" style="width: 100%;">
+      <button class="btn btn-light"><i class="fa fa-comment"><span class="ml-2">Comment</span></i></button>
+      <button class="btn btn-light m-auto"><i class="fa fa-thumbs-up"><span
+            class="ml-2">Like</span></i></button>
+    </div>
+    <div>
 
+      {% if comments %}
+      <div class="comment-wrapper">
+        {% for j in comments%}
+        {% ifequal i.post_id j.post_id %}
+       
+        
+        
+        <div class="comment-block">
+          <img class="img-circle" src="{% static 'mysite/images/avatar.png' %}">
+          <span class="username"><a href="#">{{ j.commenter_first_name }}
+              {{j.commenter_sur_name}}</a></span>
+          <span class="comment-background">{{j.comment_text}}</span>
+        </div>
+        {% endifequal %}
+        {% endfor %}
 
-
+        {% endif %}
+        <form method="POST" id= 'post-form'>
+          {% csrf_token %}
+          <div class="comment-block">
+            <img class="img-circle" src="{% static 'mysite/images/avatar.png' %}">
+            <input type="text" name="post_id" id="post_id" value="{{i.post_id}}" hidden>
+            <input type="text" name="user_id" id="user_id" value="{{i.user_id}}" hidden>
+            <span class="username"><a href="#">{{ i.user_name }}</a>
+              <input type="text" name="comment_text" id="comment_text" class="comment-text form-control col-md-8" placeholder="Write a comment...">
+                
+            <span></span>
+          </div>
+        </form>
+      </div>
     </div>
 
-    
+ 
+  {% endfor %}
+  {% else %}
+  <p>No Posts Right Now.</p>
+  {% endif %}
 
+</div>
+<script>
+$(function(){
+  $('form').keyup(function(e){
+    if(e.keyCode == 13){
+      //alert($(this).find('input').eq(0).val());
+      var token = $(this).find('input').eq(0).val();
+      var post_id = $(this).find('input').eq(1).val();
+      var user_id = $(this).find('input').eq(2).val();
+      var comment = $(this).find('input').eq(3).val();
+      post_id.trim();
+      user_id.trim();
+      comment.trim();
+      alert("post id" + post_id);
+      alert("comment " + comment);
+      alert("user id" + user_id);
+      $.ajax({
+        type: 'POST',
+        url: '{% url "mysite:future-dashboard" %}',
+        data: {
+            'user_id': user_id,
+            'comment_text': comment_text,
+            'post_id': post_id,
+            
+           
+        },
+        success: function(){
+          alert("comment stored");
+        },
+        error: function(xhr, errmsg, err){
+          console.log(xhr.status + ": " + xhr.responseText);
+        }
 
-  </div>
+      });
 
-</section>
+    }
+  });
+});
 
-
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-  <script src="{% static 'mysite/js/bootstrap.min.js' %}"></script>
-
-</body>
-</html>
-
+</script>
 {% endblock %}
-
-
