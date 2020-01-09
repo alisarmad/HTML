@@ -19,11 +19,43 @@ import json
 from django.core import serializers
 from django.core.mail import send_mail
 from django.http import JsonResponse 
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.encoding import force_bytes, force_text
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.template.loader import render_to_string
+from .token_generator import account_activation_token
+from django.template.loader import get_template
 
+
+
+def index(request):
+	return render(request, 'mysite/chat.html', {})
 
 
 class Home(TemplateView):
 	template_name=('mysite/index.html')
+
+def registration_done(request):
+	render(request, 'registration_done.html')
+
+
+def activate(request, uidb64, token):
+	try:
+		uid = force_text(urlsafe_base64_decode(uidb64))
+		user = User.objects.get(pk = uid)
+		print("user :", user)
+	except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+		user = None
+	if user and account_activation_token.check_token(user, token):
+		user.is_active = True
+		user.is_staff = True
+		
+		user.save()
+		print("user is activated", user)
+		login(request, user)
+		return redirect('mysite:login')
+	else:
+		return render(request, 'account_activation_invalid.html')
 
 
 #ExistingExplore (List of all users)
@@ -665,6 +697,7 @@ class FutureDashboard(TemplateView):
 		print('user_id:',self.request.session['_auth_user_id'])
 		user_id = int(self.request.session['_auth_user_id'])
 		response_list=[]
+		comment_list =[]
 		obj = Graduate.objects.filter(username_id = int(user_id)).first()
 		print("Graduate obj",obj)
 		if obj:
@@ -679,7 +712,41 @@ class FutureDashboard(TemplateView):
 					k=0
 					if posts:
 						for j in posts:
-							k = k+1
+							post_comments = Comment.objects.filter(post_id = j.id)
+							if post_comments:
+								for k in post_comments:
+									student_comment = Students.objects.filter(email = k.user_id).first()
+									graduate_comment = Graduate.objects.filter(email = k.user_id).first()
+									professor_comment = Professor.objects.filter(email = k.user_id).first()
+									employee_comment = Employeeee.objects.filter(email = k.user_id).first()
+									
+									#rint("student comment object: ",student_comment.first_name, student_comment.surname)
+									#print("graduate comment object: ",graduate_comment)
+									#print("professor comment object: ",professor_comment)
+									#print("employee comment object: ",employee_comment)
+									
+									context7 = {}
+									if student_comment:
+										print("student comment: ", student_comment)
+										context7['commenter_first_name'] = student_comment.first_name 
+										context7['commenter_sur_name'] = student_comment.surname 
+									elif graduate_comment:
+										context7['commenter_first_name'] = graduate_comment.first_name 
+										context7['commenter_sur_name'] = graduate_comment.surname 
+									elif professor_comment:
+										context7['commenter_first_name'] = professor_comment.first_name 
+										context7['commenter_sur_name'] = professor_comment.surname 
+									elif employee_comment:
+										context7['commenter_first_name'] = employee_comment.first_name 
+										context7['commenter_sur_name'] = employee_comment.surname 
+										
+									context7['comment_user_id'] = k.user_id
+									context7['comment_text'] = k.comment_text
+									context7['post_id'] = int(k.post_id)
+									#print("comment user id",i.user_id)
+									#print("comment post id", i.post_id)
+									#print("comment post text ", i.comment_text)
+									comment_list.append(context7)
 							context1 = {}
 							context1['user_name'] = j.future_student_user_id.first_name
 							context1['title'] = j.title
@@ -688,7 +755,7 @@ class FutureDashboard(TemplateView):
 							context1['time_stamp'] =j.time_stamp
 							response_list.append(context1)
 						print("response list : graduate ", response_list)
-						print("k :", k)
+						
 			if employee_objects:
 				print("employee objects :",employee_objects)
 				for i in employee_objects:
@@ -696,6 +763,41 @@ class FutureDashboard(TemplateView):
 					print("posts :", posts)
 					if posts:
 						for j in posts:
+							post_comments = Comment.objects.filter(post_id = j.id)
+							if post_comments:
+								for k in post_comments:
+									student_comment = Students.objects.filter(email = k.user_id).first()
+									graduate_comment = Graduate.objects.filter(email = k.user_id).first()
+									professor_comment = Professor.objects.filter(email = k.user_id).first()
+									employee_comment = Employeeee.objects.filter(email = k.user_id).first()
+									
+									#rint("student comment object: ",student_comment.first_name, student_comment.surname)
+									#print("graduate comment object: ",graduate_comment)
+									#print("professor comment object: ",professor_comment)
+									#print("employee comment object: ",employee_comment)
+									
+									context7 = {}
+									if student_comment:
+										print("student comment: ", student_comment)
+										context7['commenter_first_name'] = student_comment.first_name 
+										context7['commenter_sur_name'] = student_comment.surname 
+									elif graduate_comment:
+										context7['commenter_first_name'] = graduate_comment.first_name 
+										context7['commenter_sur_name'] = graduate_comment.surname 
+									elif professor_comment:
+										context7['commenter_first_name'] = professor_comment.first_name 
+										context7['commenter_sur_name'] = professor_comment.surname 
+									elif employee_comment:
+										context7['commenter_first_name'] = employee_comment.first_name 
+										context7['commenter_sur_name'] = employee_comment.surname 
+										
+									context7['comment_user_id'] = k.user_id
+									context7['comment_text'] = k.comment_text
+									context7['post_id'] = int(k.post_id)
+									#print("comment user id",i.user_id)
+									#print("comment post id", i.post_id)
+									#print("comment post text ", i.comment_text)
+									comment_list.append(context7)
 							context4 = {}
 							context4['user_name']= j.employee_user_id.first_name
 							context4['title']= j.title
@@ -710,6 +812,41 @@ class FutureDashboard(TemplateView):
 					posts = Teacher_post.objects.filter(teacher_id = i.id)
 					if posts:
 						for j in posts:
+							post_comments = Comment.objects.filter(post_id = j.id)
+							if post_comments:
+								for k in post_comments:
+									student_comment = Students.objects.filter(email = k.user_id).first()
+									graduate_comment = Graduate.objects.filter(email = k.user_id).first()
+									professor_comment = Professor.objects.filter(email = k.user_id).first()
+									employee_comment = Employeeee.objects.filter(email = k.user_id).first()
+									
+									#rint("student comment object: ",student_comment.first_name, student_comment.surname)
+									#print("graduate comment object: ",graduate_comment)
+									#print("professor comment object: ",professor_comment)
+									#print("employee comment object: ",employee_comment)
+									
+									context7 = {}
+									if student_comment:
+										print("student comment: ", student_comment)
+										context7['commenter_first_name'] = student_comment.first_name 
+										context7['commenter_sur_name'] = student_comment.surname 
+									elif graduate_comment:
+										context7['commenter_first_name'] = graduate_comment.first_name 
+										context7['commenter_sur_name'] = graduate_comment.surname 
+									elif professor_comment:
+										context7['commenter_first_name'] = professor_comment.first_name 
+										context7['commenter_sur_name'] = professor_comment.surname 
+									elif employee_comment:
+										context7['commenter_first_name'] = employee_comment.first_name 
+										context7['commenter_sur_name'] = employee_comment.surname 
+										
+									context7['comment_user_id'] = k.user_id
+									context7['comment_text'] = k.comment_text
+									context7['post_id'] = int(k.post_id)
+									#print("comment user id",i.user_id)
+									#print("comment post id", i.post_id)
+									#print("comment post text ", i.comment_text)
+									comment_list.append(context7)
 							context3 = {}
 							context3['user_name'] = j.teacher_user_id.first_name
 							context3['title'] = j.title
@@ -727,6 +864,42 @@ class FutureDashboard(TemplateView):
 					if posts:
 						print("posts",posts)
 						for j in posts:
+							post_comments = Comment.objects.filter(post_id = j.id)
+							print("comments from students posts:1 ", post_comments)
+							if post_comments:
+								for k in post_comments:
+									student_comment = Students.objects.filter(email = k.user_id).first()
+									graduate_comment = Graduate.objects.filter(email = k.user_id).first()
+									professor_comment = Professor.objects.filter(email = k.user_id).first()
+									employee_comment = Employeeee.objects.filter(email = k.user_id).first()
+									
+									#rint("student comment object: ",student_comment.first_name, student_comment.surname)
+									#print("graduate comment object: ",graduate_comment)
+									#print("professor comment object: ",professor_comment)
+									#print("employee comment object: ",employee_comment)
+									
+									context7 = {}
+									if student_comment:
+										print("student comment: ", student_comment)
+										context7['commenter_first_name'] = student_comment.first_name 
+										context7['commenter_sur_name'] = student_comment.surname 
+									elif graduate_comment:
+										context7['commenter_first_name'] = graduate_comment.first_name 
+										context7['commenter_sur_name'] = graduate_comment.surname 
+									elif professor_comment:
+										context7['commenter_first_name'] = professor_comment.first_name 
+										context7['commenter_sur_name'] = professor_comment.surname 
+									elif employee_comment:
+										context7['commenter_first_name'] = employee_comment.first_name 
+										context7['commenter_sur_name'] = employee_comment.surname 
+										
+									context7['comment_user_id'] = k.user_id
+									context7['comment_text'] = k.comment_text
+									context7['post_id'] = int(k.post_id)
+									#print("comment user id",i.user_id)
+									#print("comment post id", i.post_id)
+									#print("comment post text ", i.comment_text)
+									comment_list.append(context7)
 							context2={}
 							context2['user_name'] = j.student_user_id.first_name
 							context2['title'] = j.title
@@ -746,6 +919,7 @@ class FutureDashboard(TemplateView):
 			print('response_list:',response_list)
 
 		context['all_posts'] = response_list
+		context['comments']  = comment_list
 		return context
 
 class FutureProfile(TemplateView):
@@ -765,85 +939,6 @@ class FutureEditProfile(TemplateView):
 class FutureSearchProgram(TemplateView):
 	template_name =('mysite/future-dasboard/future-search-program.html')
 
-class Future_Search_Result(TemplateView):
-	template_name =('mysite/future-dasboard/future-search-program.html')
-	def post(self,request):
-		print('in post result ')
-		print('data:',request.POST)
-		search = request.POST.get('search')
-		logged_id = request.POST.get('logged_id')
-		remove_list =[]
-		response_list =[]
-		remove2 =[]
-		all_ids = list(Teacher.objects.filter(programme_title__icontains=str(search)).values_list('username_id',flat=True))
-		if all_ids:
-			print('all_ids',all_ids)
-			connected_teacher_ids = list(FutureTeacherMapping.objects.filter(future_student_user_id=int(logged_id)).values_list('connected_teacher_id',flat=True))
-			if connected_teacher_ids:
-				for i in all_ids:
-					if i in connected_teachers:
-						remove_list.append(i)
-
-				for k in remove:
-					all_ids.remove(k)
-
-			final_ids = all_ids
-			print('final_ids after connectin filter',final_ids)
-
-			pending_notification_ids = list(TeacherFutureNotifications.objects.filter(logged_id_id=int(logged_id),pending=True).values_list('sending_id_id',flat=True))
-
-			if pending_notification_ids:
-				print('notification_ids',pending_notification_ids)
-				for i in final_ids:
-					if i in pending_notification_ids:
-						remove2.append(i)
-
-				for k in remove2:
-					final_ids.remove(k)
-
-				print('final_ids after pending filter',final_ids)
-
-			print('final',final_ids)
-
-			if final_ids:
-				for i in final_ids:
-					obj = Teacher.objects.filter(username_id=int(i)).first()
-					if obj:
-						context = {}
-						context['first_name'] = obj.first_name
-						context['surname'] = obj.surname
-						context['programme_title'] = obj.programme_title
-						context['username_id'] = obj.username.id
-						context['logged_id'] = logged_id
-
-						response_list.append(context)		
-				return HttpResponse(json.dumps(response_list))
-			else:
-				return HttpResponse('0')
-		else:
-			return HttpResponse('0')
-			
-class FutureTeacherFollowing(TemplateView):
-	template_name=('mysite/future-dasboard/future-teacher-following.html')
-	def get_context_data(self, *args, **kwargs):
-		context = super(FutureTeacherFollowing, self).get_context_data(*args, **kwargs)
-		print('user_id:',self.request.session['_auth_user_id'])
-		user_id = int(self.request.session['_auth_user_id'])
-		response_list = []
-		ids = list(FutureTeacherMapping.objects.filter(future_student_user_id_id=int(user_id)).values_list('connected_teacher_id',flat=True))
-		if ids:
-			for i in ids:
-				obj = Teacher.objects.filter(username_id=int(i)).first()
-				if obj:
-					context1={}
-					context1['name'] = obj.first_name
-					context1['programme_title'] = obj.programme_title
-					context1['username'] = obj.username.id
-					response_list.append(context1)
-
-			context['already_added'] = response_list
-
-		return context
 
 class FutureAddPost(TemplateView):
 	template_name=('mysite/future-dasboard/future-add-post.html')
@@ -915,236 +1010,6 @@ class FutureAddPost(TemplateView):
 		context['all_posts'] = response_list
 
 		return render(request,'mysite/future-dasboard/future-dashboard.html',context)
-
-class FutureNotification(TemplateView):
-	template_name=('mysite/future-dasboard/future-notification.html')
-	def get_context_data(self, *args, **kwargs):
-		context = super(FutureNotification, self).get_context_data(*args, **kwargs)
-		check_id = self.request.session['_auth_user_id']
-		print(check_id)
-		response_list =[]
-		obj = TeacherFutureNotifications.objects.filter(sending_id_id=int(check_id),pending=True)
-		print('hellll')
-		print(obj)
-		if obj:
-			for i in obj:
-				context1={}
-				context1['first_name'] = i.logged_id.first_name
-				context1['id'] = i.id
-				response_list.append(context1)
-			context['notification'] = response_list
-
-		print(context)
-
-		return context
-
-def future_teacher_create_notification(request,id1,id2):
-	if request.method == 'GET':
-		print('logged_id',id1)
-		print('username_id',id2)
-		obj = TeacherFutureNotifications.objects.create(logged_id_id=int(id1),sending_id_id=int(id2))
-		obj.save()
-		print('noti saved done.')
-		return HttpResponse('0')
-	else:
-		return HttpResponse('1')
-
-def future_teacher_accept_notification(request,id1,id2):
-	if request.method == 'GET':
-		print('notification_id',id1)
-		print('logged_id',id2)
-		notification_id = id1
-		logged_id = id2
-		obj = Future_Student.objects.filter(username_id=int(logged_id)).first()
-		if obj:
-			student_id = int(obj.id)
-			print('accepter is future student.')
-			obj1 = TeacherFutureNotifications.objects.filter(id=int(notification_id)).first()
-			if obj1:
-				obj1.pending = False
-				obj1.save()
-				print('pending status changed.')
-				future_user_id = int(obj1.sending_id_id)
-				connected_teacher_user_id = int(obj1.logged_id_id)
-				print('future_student_id',future_user_id)
-				print('to_be_connected_teacher',connected_teacher_user_id)
-				print('obj for FutureTeacherMapping')
-				obj2 = FutureTeacherMapping.objects.filter(future_student_user_id_id=int(future_user_id),connected_teacher_id_id=int(connected_teacher_user_id)).first()
-				if obj2:
-					print('already connected.1')
-				else:
-					obj3 = FutureTeacherMapping.objects.create(future_student_user_id_id=int(future_user_id),connected_teacher_id_id=int(connected_teacher_user_id))
-					obj3.save()
-					print('connection form future side added side added.1')
-
-
-				print('\n\n\n\n')
-				teacher_user_id = int(obj1.logged_id_id)
-				tt_id = Teacher.objects.filter(username_id=int(teacher_user_id)).first()
-				teacher_id = int(tt_id.id)
-				connected_future_user_id = int(obj1.sending_id_id)
-				print('teacher_user_id',teacher_user_id)
-				print('connected_future_user_id',connected_future_user_id)
-				print('obj for TeacherFutureMapping')
-				obj4 = TeacherFutureMapping.objects.filter(teacher_user_id_id=int(teacher_user_id),connected_future_student_id_id=int(connected_future_user_id)).first()
-				if obj4:
-					print('already connected.2')
-				else:
-					obj5 = TeacherFutureMapping.objects.create(teacher_user_id_id=int(teacher_user_id),connected_future_student_id_id=int(connected_future_user_id))
-					obj5.save()
-					print('connection from teacher side added.1')
-
-				return HttpResponse('0')
-
-
-		ob2 = Teacher.objects.filter(username_id=int(logged_id)).first()
-		if ob2:
-			teacher_id = int(ob2.id)
-			print('accepter is teacher.')
-			obj1 = TeacherFutureNotifications.objects.filter(id=int(notification_id)).first()
-			if obj1:
-				obj1.pending = False
-				obj1.save()
-				print('pending status changed.')
-				teacher_user_id = int(obj1.sending_id_id)
-				connected_future_user_id = int(obj1.logged_id_id)
-				print('teacher_user_id',teacher_user_id)
-				print('connected_future_user_id',connected_future_user_id)
-				print('obj for TeacherFutureMapping')
-				obj2 = TeacherFutureMapping.objects.filter(teacher_user_id_id=int(teacher_user_id),connected_future_student_id_id=int(connected_future_user_id)).first()
-				if obj2:
-					print('already connected 1.')
-				else:
-					obj3 = TeacherFutureMapping.objects.create(teacher_user_id_id=int(teacher_user_id),connected_future_student_id_id=int(connected_future_user_id))
-					obj3.save()
-					print('connection from teacher side added.2')
-
-
-				print('\n\n\n\n\n')
-				future_user_id = int(obj1.logged_id_id)
-				s_id = Future_Student.objects.filter(username_id=int(future_user_id)).first()
-				future_student_id = int(s_id.id)
-				connected_teacher_user_id = int(obj1.sending_id_id)
-				print('future_student_id',future_student_id)
-				print('connected_teacher_user_id',connected_teacher_user_id)
-				print('obj for FutureTeacherMapping')
-				obj4 = FutureTeacherMapping.objects.filter(future_student_user_id_id=int(future_user_id),connected_teacher_id_id=int(connected_teacher_user_id),future_id_id=int(future_student_id)).first()
-				if obj4:
-					print('already connected 2.')
-				else:
-					obj5 = FutureTeacherMapping.objects.create(future_student_user_id_id=int(future_user_id),connected_teacher_id_id=int(connected_teacher_user_id),future_id_id=int(future_student_id))
-					obj5.save()
-					print('connection form future side added.2')
-
-				return HttpResponse('0')
-
-
-		print('in accept notification')
-		return HttpResponse('0')
-	else:
-		return HttpResponse('1')
-
-def future_teacher_delete_notification(request,id1):
-	if request.method == 'GET':
-		print('notification_id',id1)
-		obj = TeacherFutureNotifications.objects.filter(id=int(id1)).first()
-		if obj:
-			obj.delete()
-			print('noti deleted.')
-		return HttpResponse('0')
-	else:
-		return HttpResponse('1')
-
-def future_teacher_unfollow(request,id1,id2):
-	if request.method == 'GET':
-		print('logged_id',id1)
-		print('unlogged_id',id2)
-		logged_id = id1
-		unlogged_id = id2
-		obj = Future_Student.objects.filter(username_id=int(logged_id)).first()
-		if obj:
-			future_id = int(obj.id)
-			print('doer is future student.')
-			future_user_id = int(logged_id)
-			connected_teacher_user_id = int(unlogged_id)
-			print('future_user_id',future_user_id)
-			print('connected_teacher_user_id',connected_teacher_user_id)
-			print('obj for StudentEmployeeMapping')
-			obj2 = FutureTeacherMapping.objects.filter(future_student_user_id_id=int(future_user_id),connected_teacher_id_id=int(connected_teacher_user_id)).first()
-			if obj2:
-				print('exist to unfollow')
-				obj2.delete()
-				print('connection deleted when doer is future student.1')
-			else:
-				print('no connection is there to unfollow between teacher and future student.1')
-
-			print('done 1.')
-
-
-			print('\n\n\n\n\n')
-			teacher_user_id = int(unlogged_id)
-			s_id = Teacher.objects.filter(username_id=int(unlogged_id)).first()
-			teacher_id = int(s_id.id)
-			connected_future_user_id = int(logged_id)
-			print('teacher_user_id',teacher_user_id)
-			print('connected_future_user_id',connected_future_user_id)
-			print('obj for TeacherFutureMapping')
-			obj4 = TeacherFutureMapping.objects.filter(teacher_user_id_id=int(teacher_user_id),connected_future_student_id_id=int(connected_future_user_id)).first()
-			if obj4:
-				print('exist to unfollow')
-				obj4.delete()
-				print('connection deleted from employee side when the doer existing student.2')
-				return HttpResponse('0')
-			else:
-				print('no connection is there to unfollow between employee and exsiting student.2')
-
-			return HttpResponse('0')
-
-
-		ob2 = Teacher.objects.filter(username_id=int(logged_id)).first()
-		if ob2:
-			teacher_id = int(ob2.id)
-			print('doer is teacher.')
-			teacher_user_id = int(logged_id)
-			connected_employee_user_id = int(unlogged_id)
-			print('teacher_user_id',teacher_user_id)
-			print('connected_employee_user_id',connected_employee_user_id)
-			print('obj for EmployeeStudentMapping')
-			obj3 = TeacherFutureMapping.objects.filter(teacher_user_id_id=int(teacher_user_id),connected_future_student_id_id=int(connected_employee_user_id)).first()
-			if obj3:
-				print('exist to unfollow')
-				obj3.delete()
-				print('connection deleted when doer is teacher.3')
-			else:
-				print('no connection is there to unfollow between teacher and future student.3')
-
-			print('done 2.')
-
-			print('\n\n\n\n\n')
-			future_user_id = int(unlogged_id)
-			f_id = Future_Student.objects.filter(username_id=int(unlogged_id)).first()
-			future_id = int(f_id.id)
-			connected_teacher_user_id = int(logged_id)
-			print('future_user_id',future_user_id)
-			print('connected_teacher_user_id',connected_teacher_user_id)
-			print('obj for FutureTeacherMapping')
-			obj4 = FutureTeacherMapping.objects.filter(future_student_user_id_id=int(future_user_id),connected_teacher_id=int(connected_teacher_user_id)).first()
-			if obj4:
-				print('exist to unfollow')
-				obj4.delete()
-				print('connection deleted when doer is teacher.4')
-				return HttpResponse('0')
-			else:
-				print('no connection is there to unfollow between teacher and future student.3')
-
-			return HttpResponse('0')
-
-
-		else:
-			return HttpResponse('0')
-	else:
-		return HttpResponse('0')
-
 class FutureGroupChat(TemplateView):
 	template_name=('mysite/future-dasboard/future-group.html')
 
@@ -1215,96 +1080,6 @@ class TeacherProfile(TemplateView):
 			context['user_info'] = obj
 		return context
 
-class TeacherSearchFuture(TemplateView):
-	template_name=('mysite/teacher-dashboard/teacher-search-future-student.html')
-	def get_context_data(self, *args, **kwargs):
-		context = super(TeacherSearchFuture, self).get_context_data(*args, **kwargs)
-		print('user_id:',self.request.session['_auth_user_id'])
-		user_id = int(self.request.session['_auth_user_id'])
-		response_list =[]
-		ids = (TeacherFutureMapping.objects.filter(teacher_user_id_id=int(user_id)).values_list('connected_future_student_id_id',flat=True))
-		if ids:
-			for i in ids:
-				obj = Future_Student.objects.filter(username_id=int(i))
-				if obj:
-					for k in obj:
-						context1={}
-						context1['first_name'] = k.first_name
-						context1['subject_interested'] = k.subject_interested
-						context1['username'] = k.username.id
-						response_list.append(context1)
-
-			context['already_added'] = response_list
-			print('context',context)
-
-		return context
-
-	def post(self,request):
-		print('in post result ')
-		print('data:',request.POST)
-		search = request.POST.get('search')
-		logged_id = request.POST.get('logged_id')
-		remove1 =[]
-		remove2 =[]
-		response_list=[]
-
-		# obj = Teacher.objects.filter(programme_title__icontains=str(search))
-		all_ids = list(Future_Student.objects.filter(subject_interested__name__icontains=str(search)).values_list('username_id',flat=True))
-		print('all_ids',all_ids)
-		if all_ids:
-			connected_future_ids = list(TeacherFutureMapping.objects.filter(teacher_user_id_id=int(logged_id)).values_list('connected_future_student_id_id',flat=True))
-			if connected_future_ids:
-				print('connected_future_ids',connected_future_ids)
-				for i in all_ids:
-					if i in connected_future_ids:
-						remove1.append(i)
-
-					if remove1:
-						for k in remove1:
-							if k in all_ids:
-								all_ids.remove(k)
-
-				print('ids after connection filter',all_ids)
-
-			final_ids = all_ids
-
-			pending_notification_ids = list(TeacherFutureNotifications.objects.filter(logged_id_id=int(logged_id),pending=True).values_list('sending_id_id',flat=True))
-			if pending_notification_ids:
-				print('pending notification ids',pending_notification_ids)
-				for i in final_ids:
-					if i in pending_notification_ids:
-						remove2.append(i)
-
-					if remove2:
-						for i in remove2:
-							if i in final_ids:
-								final_ids.remove(i)
-
-
-				print('after pending filter',final_ids)
-
-			response_list = []
-
-			if final_ids:
-				for i in final_ids:
-					obj = Future_Student.objects.filter(username_id=int(i)).first()
-					if obj:
-						context = {}
-						context['first_name'] = obj.first_name
-						context['surname'] = obj.surname
-						context['subject_interested'] = obj.subject_interested.name
-						context['username_id'] = obj.username.id
-						context['logged_id'] = logged_id
-
-						response_list.append(context)		
-				return HttpResponse(json.dumps(response_list))
-			else:
-				return HttpResponse('0')
-		else:
-			return HttpResponse('0')	
-
-class TeacherSearchExist(TemplateView):
-	template_name=('mysite/teacher-dashboard/teacher-search-existing-student.html')
 
 class TeacherAddPost(TemplateView):
 	template_name=('mysite/teacher-dashboard/teacher-add-post.html')
@@ -1360,45 +1135,6 @@ class TeacherAddPost(TemplateView):
 class TeacherEditPost(TemplateView):
 	template_name=('mysite/teacher-dashboard/teacher-edit-profile.html')
 
-class TeacherNotification(TemplateView):
-	template_name = ('mysite/teacher-dashboard/teacher-notification.html')
-	def get_context_data(self, *args, **kwargs):
-		print('in teacher notification.')
-		context = super(TeacherNotification, self).get_context_data(*args, **kwargs)
-		check_id = self.request.session['_auth_user_id']
-		response_list=[]
-		print(check_id)
-		obj = TeacherFutureNotifications.objects.filter(sending_id_id=int(check_id),pending=True)	
-		if obj:
-			print(obj)	
-			for i in obj:
-				context1={}
-				context1['notification_id'] = i.id
-				context1['logged_id'] = i.logged_id.id
-				context1['sending_id'] = i.sending_id.id
-				context1['first_name'] = i.logged_id.first_name
-				context1['id'] = i.id
-				response_list.append(context1)
-
-		obj1 = TeacherStudentNotification.objects.filter(sending_ids_id=int(check_id),pending=True)
-		if obj1:
-			print(obj1)
-			for i in obj1:
-				context1={}
-				context1['notification_id'] = i.id
-				context1['logged_id'] = i.logged_id.id
-				context1['sending_id'] = i.sending_id.id
-				context1['first_name'] = i.logged_id.first_name
-				context1['id'] = i.id
-				response_list.append(context1)
-
-
-
-			# response_list = sorted(response_list, key=lambda k: k['time_stamp'], reverse=True)
-		context['notification'] = response_list
-		print(context)
-		return context
-
 
 ###########################Teacher#######################################
 
@@ -1424,7 +1160,8 @@ class ExistingStudentDashboard(TemplateView):
 		posts5 = Existing_student_post.objects.all()
 		#print("student posts :",posts5)
 		#retrieve logged in student country and technical subject from database
-		#comments = Comment.objects.all() 
+		comments = Comment.objects.all() 
+		print("comments list :", comments)
 		obj = Students.objects.filter(username_id=int(user_id)).first()
 		if obj:
 			student_objects = Students.objects.filter(country = obj.country, technical_subject=obj.technical_subject)
@@ -1434,6 +1171,7 @@ class ExistingStudentDashboard(TemplateView):
 			if student_objects:
 				for i in student_objects:
 					contact = {}
+					contact['id'] = i.id
 					contact['first_name'] = i.first_name
 					contact['surname'] = i.surname
 					contact['email'] = i.email
@@ -1550,6 +1288,7 @@ class ExistingStudentDashboard(TemplateView):
 									comment_list.append(context7)
 							print("post comments: ", post_comments)
 							print("post id : ",j.id)
+							print("j.student_ user first name :", j.student_user_id.first_name)
 							context1 = {}
 							context1['user_id'] = user
 							print("student id: ",j.student_id_id)
@@ -1568,6 +1307,40 @@ class ExistingStudentDashboard(TemplateView):
 					if posts:
 						for j in posts:
 							post_comments = Comment.objects.filter(post_id = j.id)
+							if post_comments:
+								for k in post_comments:
+									student_comment = Students.objects.filter(email = k.user_id).first()
+									graduate_comment = Graduate.objects.filter(email = k.user_id).first()
+									professor_comment = Professor.objects.filter(email = k.user_id).first()
+									employee_comment = Employeeee.objects.filter(email = k.user_id).first()
+									
+									#rint("student comment object: ",student_comment.first_name, student_comment.surname)
+									#print("graduate comment object: ",graduate_comment)
+									#print("professor comment object: ",professor_comment)
+									#print("employee comment object: ",employee_comment)
+									
+									context7 = {}
+									if student_comment:
+										print("student comment: ", student_comment)
+										context7['commenter_first_name'] = student_comment.first_name 
+										context7['commenter_sur_name'] = student_comment.surname 
+									elif graduate_comment:
+										context7['commenter_first_name'] = graduate_comment.first_name 
+										context7['commenter_sur_name'] = graduate_comment.surname 
+									elif professor_comment:
+										context7['commenter_first_name'] = professor_comment.first_name 
+										context7['commenter_sur_name'] = professor_comment.surname 
+									elif employee_comment:
+										context7['commenter_first_name'] = employee_comment.first_name 
+										context7['commenter_sur_name'] = employee_comment.surname 
+										
+									context7['comment_user_id'] = k.user_id
+									context7['comment_text'] = k.comment_text
+									context7['post_id'] = int(k.post_id)
+									#print("comment user id",i.user_id)
+									#print("comment post id", i.post_id)
+									#print("comment post text ", i.comment_text)
+									comment_list.append(context7)
 							print("post comments: ", post_comments)
 							context4 = {}
 							context4['user_id'] = user
@@ -1627,12 +1400,7 @@ class ExistingStudentDashboard(TemplateView):
 		
 		#print("length :",len(response_list))
 		#removing duplicate records in list
-		seen = {}
-		for i in response_list:
-			if i['title'] in seen.keys():
-				response_list.remove(i)
-			else:
-				seen[i['title']]=1	
+		
 		#print("comment list: ", comment_list)
 		#print("length :",len(response_list))
 		context['contacts'] = contact_list
@@ -1650,6 +1418,7 @@ class ExistingStudentDashboard(TemplateView):
 		
 		user = User.objects.filter(id = user_id).first()
 		ss_id = Students.objects.filter(username_id=int(user_id)).first()
+		print("logged user", user)
 		#response_data['comment_text'] = comment
 		#response_data['user_id'] = user
 		#response_data['post_id'] = post_id
@@ -1724,216 +1493,6 @@ class ExistingStudentProfile(TemplateView):
 			print("this obj has record")
 			context['user_info'] = obj
 		return context
-
-class ExistingStudentNotification(TemplateView):
-	template_name=('mysite/existing-dashboard/existing-notification.html')
-	def get_context_data(self, *args, **kwargs):
-		context = super(ExistingStudentNotification, self).get_context_data(*args, **kwargs)
-		check_id = self.request.session['_auth_user_id']
-		print(check_id)
-		obj = StudentEmployeeNotification.objects.filter(sending_ids_id=int(check_id),pending=True)
-		print('hellll')
-		print(obj)
-		if obj:
-			context['notification'] = obj
-
-		print('context:',context)
-
-		return context
-
-class ExistingStudentSearch(TemplateView):
-	template_name=('mysite/existing-dashboard/existing-search-existing-student.html')
-	def get_context_data(self,*args,**kwargs):
-		context = super(ExistingStudentSearch, self).get_context_data(*args, **kwargs)
-		print('user_id:',self.request.session['_auth_user_id'])
-		user_id = int(self.request.session['_auth_user_id'])
-		return context
-
-	def post(self,request):
-		print('in post result ')
-		print('data:',request.POST)
-		search = request.POST.get('search')
-		logged_id = request.POST.get('logged_id')
-		remove = []
-		response_list = []
-		skills_ids = list(User_Info.objects.filter(skills__name__icontains=str(search),user_type_id=2).values_list('username_id',flat=True))
-		industry_ids = list(User_Info.objects.filter(industry__name__icontains=str(search),user_type_id=2).values_list('username_id',flat=True))
-
-		if skills_ids and industry_ids:
-			print('both found.')
-			skills_ids = set(skills_ids)
-			industry_ids = set(industry_ids)
-			combine_ids = skills_ids | industry_ids
-			final_ids = list(combine_ids)
-			connected_ids = list(StudentEmployeeMapping.objects.filter(student_user_id_id=int(logged_id)).values_list('connected_employee_user_id_id',flat=True))
-			print('connected_ids',connected_ids)
-			print('final_ids',final_ids)
-			if connected_ids:
-				for i in final_ids:
-					if i in connected_ids:
-						remove.append(i)
-				if remove :
-					for k in remove:
-						final_ids.remove(k)
-			print('after final_ids',final_ids)
-
-
-			if final_ids:
-				remove1=[]
-				pending_notification_ids = list(StudentEmployeeNotification.objects.filter(logged_id_id=int(logged_id),pending=True).values_list('sending_ids_id',flat=True))
-				if pending_notification_ids:
-					print('pending_ids:',pending_notification_ids)
-					for i in final_ids:
-						if i in pending_notification_ids:
-							remove1.append(i)
-
-					if remove1:
-						for k in remove1:
-							final_ids.remove(k)
-			if final_ids:
-				for i in final_ids:
-					obj = User_Info.objects.filter(username_id=int(i)).first()
-					if obj:
-						context = {}
-						context['first_name'] = obj.first_name
-						context['surname'] = obj.surname
-						context['skills'] = obj.skills.name
-						context['industry'] = obj.industry.name
-						context['username_id'] = obj.username.id
-						context['logged_id'] = logged_id
-
-						response_list.append(context)	
-
-				return HttpResponse(json.dumps(response_list))
-			else:
-				return HttpResponse('0')
-			
-		else:
-			if skills_ids:
-				print('only skills match found.')
-				final_ids = skills_ids
-				connected_ids = list(StudentEmployeeMapping.objects.filter(student_user_id_id=int(logged_id)).values_list('connected_employee_user_id_id',flat=True))
-				print('connected_ids',connected_ids)
-				print('final_ids',final_ids)
-				if connected_ids:
-					for i in final_ids:
-						if i in connected_ids:
-							remove.append(i)
-					if remove :
-						for k in remove:
-							final_ids.remove(k)
-				print('after final_ids',final_ids)
-
-				if final_ids:
-					remove1=[]
-					pending_notification_ids = list(StudentEmployeeNotification.objects.filter(logged_id_id=int(logged_id),pending=True).values_list('sending_ids_id',flat=True))
-					if pending_notification_ids:
-						print('pending_ids:',pending_notification_ids)
-						for i in final_ids:
-							if i in pending_notification_ids:
-								remove1.append(i)
-
-						if remove1:
-							for k in remove1:
-								final_ids.remove(k)
-				if final_ids:
-					for i in final_ids:
-						obj = User_Info.objects.filter(username_id=int(i)).first()
-						if obj:
-							context = {}
-							context['first_name'] = obj.first_name
-							context['surname'] = obj.surname
-							context['skills'] = obj.skills.name
-							context['industry'] = obj.industry.name
-							context['username_id'] = obj.username.id
-							context['logged_id'] = logged_id
-
-							response_list.append(context)	
-
-					return HttpResponse(json.dumps(response_list))
-				else:
-					return HttpResponse('0')
-
-			elif industry_ids:
-				print('only industry match found.')
-				final_ids = industry_ids
-				connected_ids = list(StudentEmployeeMapping.objects.filter(student_user_id_id=int(logged_id)).values_list('connected_employee_user_id_id',flat=True))
-				print('connected_ids',connected_ids)
-				print('final_ids',final_ids)
-				if connected_ids:
-					for i in final_ids:
-						if i in connected_ids:
-							remove.append(i)
-					if remove :
-						for k in remove:
-							final_ids.remove(k)
-				
-
-				if final_ids:
-					remove1=[]
-					pending_notification_ids = list(StudentEmployeeNotification.objects.filter(logged_id_id=int(logged_id),pending=True).values_list('sending_ids_id',flat=True))
-					if pending_notification_ids:
-						print('pending_ids:',pending_notification_ids)
-						for i in final_ids:
-							if i in pending_notification_ids:
-								remove1.append(i)
-
-						if remove1:
-							for k in remove1:
-								final_ids.remove(k)
-
-				print('after final_ids',final_ids)
-
-
-				if final_ids:
-					for i in final_ids:
-						obj = User_Info.objects.filter(username_id=int(i)).first()
-						if obj:
-							context = {}
-							context['first_name'] = obj.first_name
-							context['surname'] = obj.surname
-							context['skills'] = obj.skills.name
-							context['industry'] = obj.industry.name
-							context['username_id'] = obj.username.id
-							context['logged_id'] = logged_id
-
-							response_list.append(context)
-
-					return HttpResponse(json.dumps(response_list))
-				else:
-					return HttpResponse('0')
-			else:
-				print('not found.')
-				return HttpResponse('0')
-
-class ExistingStudentFollowingEmployees(TemplateView):
-	template_name =('mysite/existing-dashboard/existing-followers-employee.html')
-	def get_context_data(self, *args, **kwargs):
-		context = super(ExistingStudentFollowingEmployees, self).get_context_data(*args, **kwargs)
-		print('user_id:',self.request.session['_auth_user_id'])
-		user_id = int(self.request.session['_auth_user_id'])
-		response_list = []
-		obj = StudentEmployeeMapping.objects.filter(student_user_id_id=user_id).values_list('connected_employee_user_id_id',flat=True)
-		if obj:
-			print(obj)
-			for i in obj:
-				obj1 = User_Info.objects.filter(username_id=int(i)).first()
-				if obj1:
-					context1={}
-					context1['first_name'] = obj1.first_name
-					context1['skills'] = obj1.skills.name
-					context1['industry'] = obj1.industry.name
-					context1['username_id'] = obj1.username.id
-					response_list.append(context1)
-
-			context['already_added'] = response_list
-			print(context)
-
-		return context
-
-
-######################ExsitingStudent######################################
-
 
 ######################Employeee############################################
 	
@@ -2036,419 +1595,6 @@ class EmployeeAddPost(TemplateView):
 		context['all_posts'] = response_list
 		return render(request,'mysite/employee-dashboard/employee-dashboard.html',context)
 
-class EmployeeNotification(TemplateView):
-	template_name=('mysite/employee-dashboard/employee-notification.html')
-	def get_context_data(self, *args, **kwargs):
-		context = super(EmployeeNotification, self).get_context_data(*args, **kwargs)
-		check_id = self.request.session['_auth_user_id']
-		print(check_id)
-		obj = StudentEmployeeNotification.objects.filter(sending_ids_id=int(check_id),pending=True)
-		print('hellll')
-		print(obj)
-		if obj:
-			context['notification'] = obj
-
-		print('context:',context)
-
-		return context
-
-class EmployeeSearchStudent(TemplateView):
-	template_name =('mysite/employee-dashboard/employee-search-existing-student.html')
-	def get_context_data(self,*args,**kwargs):
-		context = super(EmployeeSearchStudent, self).get_context_data(*args, **kwargs)
-		print('user_id:',self.request.session['_auth_user_id'])
-		user_id = int(self.request.session['_auth_user_id'])
-
-		return context
-
-	def post(self,request):
-		print('in post result ')
-		print('data:',request.POST)
-		search = request.POST.get('search')
-		logged_id = request.POST.get('logged_id')
-		remove = []
-		response_list = []
-		skills_ids = list(Students.objects.filter(skills_interested__name__icontains=str(search)).values_list('username_id',flat=True))
-		industry_ids = list(Students.objects.filter(industry_interested__name__icontains=str(search)).values_list('username_id',flat=True))
-
-
-		if skills_ids and industry_ids:
-			print('both found.')
-			skills_ids = set(skills_ids)
-			industry_ids = set(industry_ids)
-			combine_ids = skills_ids | industry_ids
-			final_ids = list(combine_ids)
-			connected_ids = list(EmployeeStudentMapping.objects.filter(employee_user_id_id=int(logged_id)).values_list('connected_student_user_id_id',flat=True))
-			print('connected_ids',connected_ids)
-			print('final_ids',final_ids)
-			if connected_ids:
-				for i in final_ids:
-					if i in connected_ids:
-						remove.append(i)
-				if remove :
-					for k in remove:
-						final_ids.remove(k)
-
-			remove1 =[]
-
-			if final_ids:
-				pending_notification_ids = list(StudentEmployeeNotification.objects.filter(logged_id_id=int(logged_id),pending=True).values_list('sending_ids_id',flat=True))
-				if pending_notification_ids:
-					print('pending_ids:',pending_notification_ids)
-					for i in final_ids:
-						if i in pending_notification_ids:
-							remove1.append(i)
-
-					if remove1:
-						for k in remove1:
-							final_ids.remove(k)
-
-
-			if final_ids:
-				for i in final_ids:
-					obj = Students.objects.filter(username_id=int(i)).first()
-					if obj:
-						context = {}
-						context['first_name'] = obj.first_name
-						context['surname'] = obj.surname
-						context['skills_interested'] = obj.skills_interested.name
-						context['industry_interested'] = obj.industry_interested.name
-						context['username_id'] = obj.username.id
-						context['logged_id'] = logged_id
-						response_list.append(context)	
-
-				return HttpResponse(json.dumps(response_list))
-			else:
-				return HttpResponse('0')
-			
-		else:
-			if skills_ids:
-				print('only skills match found.')
-				final_ids = skills_ids
-				connected_ids = list(EmployeeStudentMapping.objects.filter(employee_user_id_id=int(logged_id)).values_list('connected_student_user_id_id',flat=True))
-				print('connected_ids',connected_ids)
-				print('final_ids',final_ids)
-				if connected_ids:
-					for i in final_ids:
-						if i in connected_ids:
-							remove.append(i)
-					if remove :
-						for k in remove:
-							final_ids.remove(k)
-
-				remove1 =[]
-
-				if final_ids:
-					pending_notification_ids = list(StudentEmployeeNotification.objects.filter(logged_id_id=int(logged_id),pending=True).values_list('sending_ids_id',flat=True))
-					if pending_notification_ids:
-						print('pending_ids:',pending_notification_ids)
-						for i in final_ids:
-							if i in pending_notification_ids:
-								remove1.append(i)
-
-						if remove1:
-							for k in remove1:
-								final_ids.remove(k)
-
-					if final_ids:
-						for i in final_ids:
-							obj = Students.objects.filter(username_id=int(i)).first()
-							if obj:
-								context = {}
-								context['first_name'] = obj.first_name
-								context['surname'] = obj.surname
-								context['skills_interested'] = obj.skills_interested.name
-								context['industry_interested'] = obj.industry_interested.name
-								context['username_id'] = obj.username.id
-								context['logged_id'] = logged_id
-
-								response_list.append(context)	
-
-						return HttpResponse(json.dumps(response_list))
-					else:
-						return HttpResponse('0')
-
-			elif industry_ids:
-				print('only industry match found.')
-				final_ids = industry_ids
-				connected_ids = list(EmployeeStudentMapping.objects.filter(employee_user_id_id=int(logged_id)).values_list('connected_student_user_id_id',flat=True))
-				print('connected_ids',connected_ids)
-				print('final_ids',final_ids)
-				if connected_ids:
-					for i in final_ids:
-						if i in connected_ids:
-							remove.append(i)
-					if remove :
-						for k in remove:
-							final_ids.remove(k)
-
-
-				remove1 =[]
-
-				if final_ids:
-					pending_notification_ids = list(StudentEmployeeNotification.objects.filter(logged_id_id=int(logged_id),pending=True).values_list('sending_ids_id',flat=True))
-					if pending_notification_ids:
-						print('pending_ids:',pending_notification_ids)
-						for i in final_ids:
-							if i in pending_notification_ids:
-								remove1.append(i)
-
-						if remove1:
-							for k in remove1:
-								final_ids.remove(k)
-
-
-				if final_ids:
-					for i in final_ids:
-						obj = Students.objects.filter(username_id=int(i)).first()
-						if obj:
-							context = {}
-							context['first_name'] = obj.first_name
-							context['surname'] = obj.surname
-							context['skills_interested'] = obj.skills_interested.name
-							context['industry_interested'] = obj.industry_interested.name
-							context['username_id'] = obj.username.id
-							context['logged_id'] = logged_id
-
-							response_list.append(context)
-
-					return HttpResponse(json.dumps(response_list))
-				else:
-					return HttpResponse('0')
-			else:
-				print('not found.')
-				return HttpResponse('0')
-
-def student_employee_create_notification(request,id1,id2):
-	if request.method == 'GET':
-		print('dffgsgsgfs')
-		print('logged_id',id1)
-		print('username_id',id2)
-		obj = StudentEmployeeNotification.objects.create(logged_id_id=int(id1),sending_ids_id=int(id2))
-		obj.save()
-		print('noti saved done.')
-		return HttpResponse('0')
-	else:
-		return HttpResponse('1')
-
-def student_employee_delete_notification(request,id1):
-	if request.method == 'GET':
-		print('notification_id',id1)
-		obj = StudentEmployeeNotification.objects.filter(id=int(id1)).first()
-		if obj:
-			obj.delete()
-			print('noti deleted.')
-		return HttpResponse('0')
-	else:
-		return HttpResponse('1')
-
-def student_employee_accept_notification(request,id1,id2):
-	if request.method == 'GET':
-		print('notification_id',id1)
-		print('logged_id',id2)
-		obj = Students.objects.filter(username_id=int(id2)).first()
-		if obj:
-			student_id = int(obj.id)
-			print('accepter is future student.')
-			obj1 = TeacherFutureNotifications.objects.filter(id=int(id1)).first()
-			if obj1:
-				obj1.pending = False
-				obj1.save()
-				print('pending status changed.')
-				teacher_user_id = int(obj1.sending_ids_id)
-				future_student_user_id = int(obj1.logged_id_id)
-				print('student',student_user_id)
-				print('to be connected teacher',teacher_user_id)
-				print('obj for StudentEmployeeMapping')
-				obj2 = StudentEmployeeMapping.objects.filter(student_user_id_id=int(student_user_id),connected_employee_user_id_id=int(connected_employee_user_id)).first()
-				if obj2:
-					print('already connected.1')
-				else:
-					obj3 = StudentEmployeeMapping.objects.create(student_user_id_id=int(student_user_id),connected_employee_user_id_id=int(connected_employee_user_id),student_id_id=inr(student_id))
-					obj3.save()
-					print('connection form student side added.')
-
-
-				print('\n\n\n\n')
-				employee_user_id = int(obj1.logged_id_id)
-				ee_id = User_Info.objects.filter(username_id=int(employee_user_id)).first()
-				employee_id = int(ee_id.id)
-				connected_student_user_id = int(obj1.sending_ids_id)
-				print('employee_user_id',employee_user_id)
-				print('connected_student_user_id',connected_student_user_id)
-				print('obj for EmployeeStudentMapping')
-				obj4 = EmployeeStudentMapping.objects.filter(employee_user_id_id=int(employee_user_id),connected_student_user_id_id=int(connected_student_user_id)).first()
-				if obj4:
-					print('already connected.2')
-				else:
-					obj5 = EmployeeStudentMapping.objects.create(employee_user_id_id=int(employee_user_id),connected_student_user_id_id=int(connected_student_user_id),employee_id_id=int(employee_id))
-					obj5.save()
-					print('connection from employee side added.')
-
-				return HttpResponse('0')
-
-
-		ob2 = User_Info.objects.filter(username_id=int(id2)).first()
-		if ob2:
-			employee_id = int(ob2.id)
-			print('accepter is employee')
-			obj1 = StudentEmployeeNotification.objects.filter(id=int(id1)).first()
-			if obj1:
-				obj1.pending = False
-				obj1.save()
-				print('pending status changed.')
-				employee_user_id = int(obj1.sending_ids_id)
-				connected_student_user_id = int(obj1.logged_id_id)
-				print('employee_user_id',employee_user_id)
-				print('connected_student_user_id',connected_student_user_id)
-				print('obj for EmployeeStudentMapping')
-				obj2 = EmployeeStudentMapping.objects.filter(employee_user_id_id=int(employee_user_id),connected_student_user_id_id=int(connected_student_user_id)).first()
-				if obj2:
-					print('already connected 1.')
-				else:
-					obj3 = EmployeeStudentMapping.objects.create(employee_user_id_id=int(employee_user_id),connected_student_user_id_id=int(connected_student_user_id),employee_id_id=int(employee_id))
-					obj3.save()
-					print('connection from employee side added.')
-
-
-				print('\n\n\n\n\n')
-				student_user_id = int(obj1.logged_id_id)
-				s_id = Students.objects.filter(username_id=int(student_user_id)).first()
-				student_id = int(s_id.id)
-				connected_employee_user_id = int(obj1.sending_ids_id)
-				print('student_user_id',student_user_id)
-				print('connected_employee_user_id',connected_employee_user_id)
-				print('obj for StudentEmployeeMapping')
-				obj4 = StudentEmployeeMapping.objects.filter(student_user_id_id=int(student_user_id),connected_employee_user_id_id=int(connected_employee_user_id)).first()
-				if obj4:
-					print('already connected 2.')
-				else:
-					obj5 = StudentEmployeeMapping.objects.create(student_user_id_id=int(student_user_id),connected_employee_user_id_id=int(connected_employee_user_id),student_id_id=int(student_id))
-					obj5.save()
-					print('connection form student side added.')
-
-				return HttpResponse('0')
-
-
-		print('in accept notification')
-		return HttpResponse('0')
-	else:
-		return HttpResponse('1')
-
-def student_employee_unfollow_notification(request,id1,id2):
-	if request.method == 'GET':
-		print('logged_id',id1)
-		print('unlogged_id',id2)
-		logged_id = id1
-		unlogged_id = id2
-		obj = Students.objects.filter(username_id=int(logged_id)).first()
-		if obj:
-			student_id = int(obj.id)
-			print('doer is existing student.')
-			student_user_id = int(logged_id)
-			connected_employee_user_id = int(unlogged_id)
-			print('student',student_user_id)
-			print('to be connected employee',connected_employee_user_id)
-			print('obj for StudentEmployeeMapping')
-			obj2 = StudentEmployeeMapping.objects.filter(student_user_id_id=int(student_user_id),connected_employee_user_id_id=int(connected_employee_user_id)).first()
-			if obj2:
-				print('exist to unfollow')
-				obj2.delete()
-				print('connection deleted when doer is existing student.1')
-			else:
-				print('no connection is there to unfollow between employee and exsiting student.1')
-
-			print('done 1.')
-
-
-			print('\n\n\n\n\n')
-			employee_user_id = int(unlogged_id)
-			s_id = User_Info.objects.filter(username_id=int(unlogged_id)).first()
-			employee_id = int(s_id.id)
-			connected_student_user_id = int(logged_id)
-			print('student_user_id',student_user_id)
-			print('connected_employee_user_id',connected_employee_user_id)
-			print('obj for EmployeeStudentMapping')
-			obj4 = EmployeeStudentMapping.objects.filter(employee_user_id_id=int(employee_user_id),connected_student_user_id_id=int(connected_student_user_id)).first()
-			if obj4:
-				obj4.delete()
-				print('connection deleted from employee side when the doer existing student.2')
-				return HttpResponse('0')
-			else:
-				print('no connection is there to unfollow between employee and exsiting student.2')
-
-			return HttpResponse('0')
-
-
-		ob2 = User_Info.objects.filter(username_id=int(logged_id)).first()
-		if ob2:
-			employee_id = int(ob2.id)
-			print('doer is employee')
-			employee_user_id = int(logged_id)
-			connected_student_user_id = int(unlogged_id)
-			print('employee_user_id',employee_user_id)
-			print('connected_student_user_id',connected_student_user_id)
-			print('obj for EmployeeStudentMapping')
-			obj3 = EmployeeStudentMapping.objects.filter(employee_user_id_id=int(employee_user_id),connected_student_user_id_id=int(connected_student_user_id)).first()
-			if obj3:
-				print('exist to unfollow')
-				obj3.delete()
-				print('connection deleted when doer is employee.3')
-			else:
-				print('no connection is there to unfollow between employee and exsiting student.3')
-
-			print('done 2.')
-
-			print('\n\n\n\n\n')
-			student_user_id = int(unlogged_id)
-			s_id = Students.objects.filter(username_id=int(unlogged_id)).first()
-			student_id = int(s_id.id)
-			connected_employee_user_id = int(logged_id)
-			print('student_user_id',student_user_id)
-			print('connected_employee_user_id',connected_employee_user_id)
-			print('obj for StudentEmployeeMapping')
-			obj4 = StudentEmployeeMapping.objects.filter(student_user_id_id=int(student_user_id),connected_employee_user_id_id=int(connected_employee_user_id)).first()
-			if obj4:
-				print('exist to unfollow')
-				obj4.delete()
-				print('connection deleted when doer is employee.4')
-				return HttpResponse('0')
-			else:
-				print('no connection is there to unfollow between employee and exsiting student.3')
-
-			return HttpResponse('0')
-
-
-		else:
-			return HttpResponse('0')
-	else:
-		return HttpResponse('0')
-
-class EmployeeStudentFollowing(TemplateView):
-	template_name = ('mysite/employee-dashboard/employee-student-following.html')
-	def get_context_data(self, *args, **kwargs):
-		context = super(EmployeeStudentFollowing, self).get_context_data(*args, **kwargs)
-		print('user_id:',self.request.session['_auth_user_id'])
-		user_id = int(self.request.session['_auth_user_id'])
-		response_list = []
-		obj = EmployeeStudentMapping.objects.filter(employee_user_id_id=user_id).values_list('connected_student_user_id_id',flat=True)
-		if obj:
-			print(obj)
-			for i in obj:
-				obj1 =Students.objects.filter(username_id=int(i)).first()
-				if obj1:
-					context1={}
-					context1['first_name'] = obj1.first_name
-					context1['skills'] = obj1.skills_interested.name
-					context1['industry'] = obj1.industry_interested.name
-					context1['username_id'] = obj1.username.id
-					response_list.append(context1)
-
-			context['already_added'] = response_list
-			print(context)
-
-		return context
-
 ##############Employee#############################################
 
 
@@ -2548,6 +1694,23 @@ class Entrepreneurs(TemplateView):
 				print("TechnicalSubject:",technical_subject)
 				user_info = Professor.objects.create(username_id=user.id,first_name=user.first_name,surname=surname,email=user.username,country_id=country, technical_subject_id = technical_subject)
 				user_info.save()
+				current_site = get_current_site(request)
+				print("current site",current_site.domain)
+				subject = 'Activate your Account'
+				message = render_to_string('account_activation_email.txt',{
+					'user': user,
+					'domain': current_site.domain,
+					'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+					'token':account_activation_token.make_token(user),
+				})
+				html_message = render_to_string('activate_account.html',{
+					'user': user,
+					'domain': current_site.domain,
+					'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+					'token':account_activation_token.make_token(user),
+				})
+				user.email_user(subject = subject,message = message, html_message = html_message)
+
 				return HttpResponse('1')
 
 			except Exception as e:
@@ -2577,17 +1740,35 @@ class Employee(TemplateView):
 		if user:
 			return HttpResponse('0')
 		else:
+
 			try:
-				user = User.objects.create(username=email)
+				user = User.objects.create(username=email, email = email)
 				user.set_password(password)
 				user.save()
 				user.first_name = first_name
-				user.is_active = True
-				user.is_staff = True
+				user.is_active = False
+				user.is_staff = False
 				user.save()
 				user_info = Employeeee.objects.create(username_id=user.id,first_name=user.first_name,email=user.username,surname=surname,technical_subject_id = technical_subject,country_id=country)
 				user_info.save()
-				return HttpResponse('1')
+				current_site = get_current_site(request)
+				print("current site",current_site.domain)
+				subject = 'Activate your Account'
+				message = render_to_string('account_activation_email.txt',{
+					'user': user,
+					'domain': current_site.domain,
+					'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+					'token':account_activation_token.make_token(user),
+				})
+				html_message = render_to_string('activate_account.html',{
+					'user': user,
+					'domain': current_site.domain,
+					'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+					'token':account_activation_token.make_token(user),
+				})
+				user.email_user(subject = subject,message = message, html_message = html_message)
+
+				return HttpResponse("1")
 
 			except Exception as e:
 				print('user error is :',e)
@@ -2656,8 +1837,8 @@ class ExistingEmployeeRegistration(TemplateView):
 				user.set_password(password)
 				user.save()
 				user.first_name = first_name
-				user.is_active = True
-				user.is_staff = True
+				user.is_active = False
+				
 				user.save()
 				print(user.id)
 				print(type(user.id))
@@ -2694,16 +1875,35 @@ class Future_Registration(TemplateView):
 			return HttpResponse('0')
 		else:
 			try:
-				user = User.objects.create(username=email)
+				user = User.objects.create(username=email, email = email)
 				user.set_password(password)
 				user.save()
 				user.first_name = first_name
-				user.is_active = True
-				user.is_staff = True
+				user.is_active = False
+				user.is_staff = False
+				
 				user.save()
 				future_student_info = Graduate.objects.create(username_id=user.id,first_name=user.first_name,email=user.username,surname=surname,technical_subject_id = technical_subject,country_id=country)
 				future_student_info.save()
-				return HttpResponse('1')
+				current_site = get_current_site(request)
+				print("current site",current_site.domain)
+				subject = 'Activate your Account'
+				message = render_to_string('account_activation_email.txt',{
+					'user': user,
+					'domain': current_site.domain,
+					'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+					'token':account_activation_token.make_token(user),
+				})
+				html_message = render_to_string('activate_account.html',{
+					'user': user,
+					'domain': current_site.domain,
+					'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+					'token':account_activation_token.make_token(user),
+				})
+				user.email_user(subject = subject,message = message, html_message = html_message)
+
+				return HttpResponse("1")
+
 
 			except Exception as e:
 				print('user error is :',e)
@@ -2742,17 +1942,35 @@ class Student_Registration(TemplateView):
 		else:
 			try:
 				
-				user = User.objects.create(username=email)
+				user = User.objects.create(username=email,email = email)
 				user.set_password(password)
 				user.save()
 				user.first_name = first_name
-				user.is_active = True
-				user.is_staff = True
+				user.is_active = False
+				user.is_staff = False
+				
 				user.save()
 				student_info = Students.objects.create(username_id=user.id,first_name=user.first_name,email=user.username,surname=surname,country_id=int(country),technical_subject_id = int(technical_subject), student_type_id = int(student_type))
 				student_info.save()
-		
+				current_site = get_current_site(request)
+				print("current site",current_site.domain)
+				subject = 'Activate your Account'
+				message = render_to_string('account_activation_email.txt',{
+					'user': user,
+					'domain': current_site.domain,
+					'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+					'token':account_activation_token.make_token(user),
+				})
+				html_message = render_to_string('activate_account.html',{
+					'user': user,
+					'domain': current_site.domain,
+					'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+					'token':account_activation_token.make_token(user),
+				})
+				user.email_user(subject = subject,message = message, html_message = html_message)
+
 				return HttpResponse('1')
+
 			except Exception as e:
 				print('user error is :',e)
 				user = User.objects.filter(username=email)
@@ -2801,16 +2019,37 @@ class Teacher_Registration(TemplateView):
 			return HttpResponse('0')
 		else:
 			try:
-				user = User.objects.create(username=email)
+				user = User.objects.create(username=email, email = email)
 				user.set_password(password)
 				user.save()
 				user.first_name = first_name
-				user.is_active = True
-				user.is_staff = True
+				user.is_active = False
+				user.is_staff = False
+				
 				user.save()
+
 				teacher_info = Teacher.objects.create(username_id=int(user.id),first_name=user.first_name,email=user.username,surname=surname,title_id=int(title),university_name=university_name,university_address=university_address,phone_number=phone_number,position_id=int(position),programme_title=programme_title,subject_area_id=int(subject_area))
 				teacher_info.save()
-				return HttpResponse('1')
+				current_site = get_current_site(request)
+				print("current site",current_site.domain)
+				subject = 'Activate your Account'
+				message = render_to_string('account_activation_email.txt',{
+					'user': user,
+					'domain': current_site.domain,
+					'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+					'token':account_activation_token.make_token(user),
+				})
+				html_message = render_to_string('activate_account.html',{
+					'user': user,
+					'domain': current_site.domain,
+					'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+					'token':account_activation_token.make_token(user),
+				})
+				user.email_user(subject = subject,message = message, html_message = html_message)
+
+				return HttpResponse("1")
+
+				
 			except Exception as e:
 				print('user error is :',e)
 				return HttpResponse('2')
@@ -2844,9 +2083,12 @@ class Login(TemplateView):
 		print('username:',username)
 		print('password:',password)
 		users = User.objects.all()
-		print('all users :', users)
+		#print('all users :', users)
 		user = authenticate(username=username, password=password)
-		
+		if user:
+			print("user exist")
+		else:
+			print("does not exist")
 		#print("user id: ",user.id)
 		if user:
 			if user.is_superuser == True:
@@ -2875,41 +2117,5 @@ class Login(TemplateView):
 
 		else:
 			return HttpResponse('7')
-
-class ForgotPassword(TemplateView):
-	template_name = ('mysite/forgot.html')
-	def get_context_data(self, *args, **kwargs):
-		context = super(ForgotPassword, self).get_context_data(*args, **kwargs)
-		return context
-
-	def post(self,request):
-		username = request.POST.get('username')
-		user = User.objects.filter(username=username).first()
-		if user:
-			newpass = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(8)])
-			print('new pass:',newpass)
-			user.set_password(newpass)
-			user.save()
-			print('saved new.')
-			sender = 'sarmad1305@gmail.com'
-			receiver = username
-			message = 'Hello '+str(user.first_name)+ ' Your New Password is -' +str(newpass)
-			try:
-				server = smtplib.SMTP('smtp.gmail.com', 587)
-				server.starttls()
-				server.login('sarmad1305@gmail.com', 'hzdxyvyhuueceyon')
-				msg = EmailMessage()
-				msg.set_content(message)
-				msg['Subject'] = 'NEW PASSWORD'
-				msg['From'] = 'sarmad1305@gmail.com'
-				msg['To'] = str(receiver)
-				server.send_message(msg) 
-				print('sent...')      
-				return HttpResponse('1')
-			except Exception as e:
-				print("stmp error message :",e)
-				return HttpResponse('2')
-		else:
-			return HttpResponse('0')
 
 ######################Other Funtions########################

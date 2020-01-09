@@ -36,9 +36,18 @@ $(document).on('click','#login_btn',function(e){
   $('.loader').fadeOut(1500);
   var username = $('#email').val();
   var password = $('#password').val();
-  var user_type = $('input[name=user_type]:checked').val();
   var token = $('input[name="csrfmiddlewaretoken"]').val();
   username = username.trim()
+
+  if( username.length != 0 && password.length!= 0 ){
+      
+      $(this).addClass("active");
+      $(this).removeClass("btn-yellow");
+      $('.processing').css('display', 'block');
+  }
+ 
+
+
 
  if(username.length == 0)
   {
@@ -92,8 +101,10 @@ else
      if(response =='0')
     {
 
-      alert('Admin cannot login here.');
-      return false;
+      $("#response_error").text('Admin cannot login here.');
+      document.getElementById("response_error").style.color = "red";
+      return false; 
+      
     }
     if (response == '1')
     {
@@ -115,12 +126,22 @@ else
     }
    if(response == '6')
     {
-      alert('Wrong credentials for this user_type.');
+      
+      $("#response_error").text('Email or Password is wrong.');
+      document.getElementById("response_error").style.color = "red";
+      $('.processing').css('display', 'none');
+
+      $('#login_btn').removeClass("active");
+      $('#login_btn').addClass("btn-yellow");
       return false;
     }
     if(response=='7')
     {
-      alert('Wrong credentials.');
+      $("#response_error").text('Your Email or Password is Incorrect');
+      document.getElementById("response_error").style.color = "red";
+      $('.processing').css('display', 'none');
+      $('#login_btn').removeClass("active");
+      $('#login_btn').addClass("btn-yellow");
       return false;
     }  
     }
@@ -129,6 +150,9 @@ else
 });
 
 $(document).ready(function () {
+  
+     
+  $('[data-toggle="tooltip"]').tooltip();   
   $('#password').keypress(function (e) {
     if (e.keyCode == 13)
     {

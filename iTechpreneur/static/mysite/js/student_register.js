@@ -1,6 +1,6 @@
 function validateEmail(sEmail) 
 {
-  console.log("hello");
+ 
   var filter = /^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
   if (filter.test(sEmail)) 
   {
@@ -53,7 +53,7 @@ $('#email').keypress(function( e ) {
 
 
 $(document).on('click','#student_sign_up_btn',function(e){
- console.log("Hello !!")  
+ 
   var first_name = $('#first_name').val();
   var surname = $('#surname').val();
   var email = $('#email').val();
@@ -69,6 +69,14 @@ $(document).on('click','#student_sign_up_btn',function(e){
   technical_subject = technical_subject.trim();
   student_type = student_type.trim();
   country = country.trim();
+
+if(first_name.length != 0 && surname.length != 0 && email.length != 0 && password.length != 0 && technical_subject.length != 0 && student_type.length !=0 && country.length != 0 ){
+    
+   
+    $(this).addClass("active");
+    $(this).removeClass("btn-yellow");
+    $('.processing').css("display","block");
+}
 
 
   
@@ -86,7 +94,7 @@ $(document).on('click','#student_sign_up_btn',function(e){
    if (first_name.match(/^[a-zA-Z\s]+$/))
      {
        first_name = first_name.replace(/  +/g, ' '); 
-       console.log('name done.')
+      
        $("#first_name_error").text('');
        // alert('valid');  
      }
@@ -129,7 +137,7 @@ if(surname.length == 0)
    if (surname.match(/^[a-zA-Z\s]+$/))
      {
        surname = surname.replace(/  +/g, ' '); 
-       console.log('name done.')
+      
        $("#surname_error").text('');
        // alert('valid');  
      }
@@ -153,7 +161,7 @@ if(surname.length == 0)
   }
   if(surname.length > 0 && surname.length <= 25)
   {
-    console.log('name done.')
+    
     $("#surname_error").text('');
   }
 
@@ -175,7 +183,7 @@ if(surname.length == 0)
   {
     if(validateEmail(email))
     {
-      console.log('valid email');
+      
       $("#email_error").text('');
     }
     else
@@ -231,7 +239,7 @@ $("#country_error").text('');
 
   if(password.length > 8)
   {
-    console.log('pass done.')
+    
    }
    else
   {
@@ -241,7 +249,7 @@ $("#country_error").text('');
     return false;    
   }
 
-  console.log("before ajax")
+ 
   $.ajax({
     url: '/student_registration/',
     type: "POST",
@@ -260,21 +268,23 @@ $("#country_error").text('');
         
      if(response=='1')
       {
-        console.log(response)
-        alert("Registration done.");
-        // $('#info_model').modal('show');
-        // $("#p_text").text("Registration done.");
-        window.location.href='/login/';
+
+        
+        $('#student_sign_up_btn').removeClass("active");
+        $('#student_sign_up_btn').addClass("btn-yellow");
+        $('.processing').css("display", "none");
+        $('.success').css('display','block');
+       
+        return false;
       }
       else
       {
         if(response=='0')
         {
-          alert('This Email is already registered.');
-          console.log(response)
-          console.log('e done.')
-          // $("#email_txt").text('E-mail already registered.');
-          // document.getElementById("email_txt").style.color = "red";
+          $('#student_sign_up_btn').removeClass("active");
+          $('#student_sign_up_btn').addClass("btn-yellow");
+          $('.processing').css("display", "none");
+          $('.failure').css('display','block');
           return false;
         }       
       }
@@ -283,7 +293,12 @@ $("#country_error").text('');
 });
 
 
+  
+
 $(document).ready(function () {
+
+
+
   $('#confirm_password').keypress(function (e) {
     if (e.keyCode == 13)
     {

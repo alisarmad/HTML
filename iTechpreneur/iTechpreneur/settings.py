@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
     'mysite',
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -142,3 +143,4 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'sarmad1305@gmail.com' 
 EMAIL_HOST_PASSWORD = 'hzdxyvyhuueceyon'
+DEFAULT_FROM_EMAIL = 'Younii Team <noreply@younii.com'

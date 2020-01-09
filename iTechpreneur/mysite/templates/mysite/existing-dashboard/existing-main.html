@@ -107,7 +107,7 @@
         </div>
         <div class="col-3 contact-wrapper">
 
-
+           <!--
           <div class="card-header">
 						<div class="input-group">
 							<input type="text" placeholder="Search..." name="" class="form-control search">
@@ -120,8 +120,9 @@
 						<ul class="contacts">
               {% for i in contacts %}
 
-						<li class="active contact-user"><span class="user-email">{{i.email}}</span>
-							<div class="d-flex bd-highlight">
+						<li class="active contact-user" id="{{i.id}}"><span>{{i.id}}</span>
+            <form method="POST" id='contact-detail'>
+              <div class="d-flex bd-highlight">
 								<div class="img_cont">
 									<img src="https://static.turbosquid.com/Preview/001292/481/WV/_D.jpg" class="rounded-circle user_img">
 									<span class="online_icon"></span>
@@ -129,13 +130,14 @@
 								<div class="user_info">
 									<span>{{i.first_name }} {{i.surname}}</span>
 								</div>
-							</div>
+              </div>
+            </form>
 						</li>
           {% endfor %}
           
             </ul>
-            
-            <!---Start of message box code-->
+           
+              
             <div class="container">
               <div class="row">
                   <div class="panel panel-chat">
@@ -186,6 +188,7 @@
                 </div>
               </div>
             </div>
+          -->
             <!--end of Messagebox code-->
 					</div>
           
@@ -288,11 +291,14 @@
 
     // Code for select specific user from contact list
 $(document).ready(function(){
-    $('.contacts .contact-user .user-email').on('click', function(e){
+    $('.contacts .contact-user').on('click', function(e){
       e.stopPropagation();
-    
+      var id = $(this).attr('id');
+      
+      
+
       var text = $(this).contents()[0].nodeValue.trim();
-      alert(text);
+      
     });
   });
     </script>

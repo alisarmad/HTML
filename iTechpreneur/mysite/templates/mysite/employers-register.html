@@ -114,6 +114,10 @@
             
                 <input type="hidden" class="form-control" id="user_type" value="2" name="user_type" />
                 <button type="button" class="btn btn-yellow" id="employee_sign_up_btn">Submit</button>
+                <span class="ml-3 success">You are Registered Successfully, Please Check out your email to confirm your email address!</span>
+                <span class="ml-3 failure">This Email is already registered, Please try another email!</span>
+                <span class="ml-3 processing">Processing...</span>
+               
                 <div class="forgot-pass">      
                     <p>Already Registered ? <a href="{% url 'mysite:login' %}">Login Here</a></p>
                 </div>
@@ -124,7 +128,39 @@
     </div>
   </div>
 </section>
-
+<style>
+  .processing{
+    color: white;
+    display: none;
+  }
+  .failure{
+    display: none;
+    color: red;
+  }
+  .success{
+    display: none;
+    color: white;  
+  }
+  #student_sign_up_btn{
+    transition:all ease 0.5s;
+  }
+  .active{
+    font-size: 0;
+    width: 50px;
+    height: 50px;
+    border: 3px solid yellow;
+    border-radius: 50%;
+    background-color: transparent;
+    border-left-color: transparent;
+    animation: rotate 1.4s ease 0.5s infinite;
+  }
+  
+  @keyframes rotate{
+    0%{
+      transform: rotate(360deg);
+    }
+  }
+  </style>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
   <script src="{% static 'mysite/js/bootstrap.min.js' %}"></script>

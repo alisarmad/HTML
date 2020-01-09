@@ -54,6 +54,7 @@ $('#email').keypress(function( e ) {
 
 $(document).on('click','#future_student_sign_up_btn',function(e){
  console.log("Hello !!")  
+ alert("hello")
   var first_name = $('#first_name').val();
   var surname = $('#surname').val();
   var email = $('#email').val();
@@ -65,6 +66,13 @@ $(document).on('click','#future_student_sign_up_btn',function(e){
   surname = surname.trim()
   email = email.trim()
   
+  if(first_name.length != 0 && surname.length != 0 && email.length != 0 && password.length != 0 && technical_subject.length != 0 && country.length != 0 ){
+    
+   
+    $(this).addClass("active");
+    $(this).removeClass("btn-yellow");
+    $('.processing').css("display","block");
+}
 
 
  if(first_name.length == 0)
@@ -238,33 +246,34 @@ $("#country_error").text('');
     dataType: 'json',
     cache: false,
     success: function(response){
-     // if(response == '3')
-     //  {
-     //    // alert('Email already registered.');
-     //    $("#email_txt").text('Email already registered.');
-     //    document.getElementById("email_txt").style.color = "red";
-     //    return false;
-     //  }
-     
+   
         
-     if(response=='1')
+     if(response == '1')
       {
-        console.log(response)
-        alert("Registration done.");
-        // $('#info_model').modal('show');
-        // $("#p_text").text("Registration done.");
-        window.location.href='/login/';
+        alert(response)
+        console.log(response);
+        $('#future_student_sign_up_btn').removeClass("active");
+        $('#future_student_sign_up_btn').addClass("btn-yellow");
+        $('.failure').css("display", "none");
+        $('.processing').css("display", "none");
+        $('.success').css('display','block');
+
+        return false;
+        
       }
       else
       {
         if(response=='0')
         {
-          alert('This Email is already registered.');
-          console.log(response)
-          console.log('e done.')
-          // $("#email_txt").text('E-mail already registered.');
-          // document.getElementById("email_txt").style.color = "red";
+          $('#future_student_sign_up_btn').removeClass("active");
+          $('#future_student_sign_up_btn').addClass("btn-yellow");
+          $('.success').css("display", "none");
+          $('.processing').css("display", "none");
+          $('.failure').css('display','block');
+          $('.failure').css('color','red');
+       
           return false;
+          
         }       
       }
     }

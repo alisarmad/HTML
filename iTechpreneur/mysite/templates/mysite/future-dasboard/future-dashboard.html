@@ -82,19 +82,12 @@ $(function(){
       post_id.trim();
       user_id.trim();
       comment.trim();
-      alert("post id" + post_id);
-      alert("comment " + comment);
-      alert("user id" + user_id);
+      
+      var theForm = $(this)
       $.ajax({
         type: 'POST',
         url: '{% url "mysite:future-dashboard" %}',
-        data: {
-            'user_id': user_id,
-            'comment_text': comment_text,
-            'post_id': post_id,
-            
-           
-        },
+        data: theForm.serialize(),
         success: function(){
           alert("comment stored");
         },

@@ -372,6 +372,10 @@ html, body {
   box-shadow: 15px 15px 49px 0px rgba(2, 8, 22, 0.21) !important;
 }
 
+.btn-yellow:hover{
+  background-color: #fc8a00;
+}
+
 .btn-purple {
   background: #b842f0;
   padding: 12px 25px;
@@ -536,7 +540,7 @@ html, body {
 }
 
 .right-inner .btn-yellow {
-  margin: 0;
+  margin: 0px;
 }
 
 .right-inner.single-field {
