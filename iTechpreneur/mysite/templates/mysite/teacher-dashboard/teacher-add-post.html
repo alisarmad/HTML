@@ -45,42 +45,7 @@
                           </div>
                   </div>
                 </div>
-                {% if teacher_post %}
-                <div class="page-sb-title">
-                  <h1 class="hdg">Post's Added</h1>
-                </div>
-                {% endif %}
-
-                <div class="post-box">
-                  <div class="table-program">
-                      <div class="table-responsive">
-                      {% if teacher_post %}
-                        <table class="table table-bordered fixed-th">
-                          <thead>
-                            <tr>
-                              <th>Post Title</th>
-                              <th>Description</th>
-                              <th>Action</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                          {% for i in teacher_post %}
-                            <tr>
-                              <td>{{ i.title }}</td>
-                              <td>{{ i.description  }}</td>
-                              <td>
-                                   <button type="button" class="btn btn-sm-dark">Delete</button>
-                                   <button type="button" class="btn btn-sm-dark2">Edit</button>
-                              </td>
-                            </tr>
-                            {% endfor %}
-                          </tbody>
-                        </table>
-                        {% endif %}
-                      </div>
-                  </div>
-                </div>
-
+                
             </div>
 
           </div>

@@ -18,7 +18,7 @@ urlpatterns = [
 	
 	# Graduate registration is specified in Future_Registration View 
 	path('graduate_registration/',Future_Registration.as_view(),name='graduate_registration'),
-	path('teacher_registration/',Teacher_Registration.as_view(),name='teacher_registration'),
+	#path('teacher_registration/',Teacher_Registration.as_view(),name='teacher_registration'),
 	path('employee_registration/',Employee.as_view(),name='employee_registration'),
 	#path('existing_employee_registration/',ExistingEmployeeRegistration.as_view(),name='existing_employee_registration'),
 	#Enterpreneurs Registration is used for Professor 
@@ -64,7 +64,7 @@ urlpatterns = [
 	#path('teacher-search-future/',TeacherSearchFuture.as_view(),name='teacher-search-future'),
 	#path('teacher-search-exist/',TeacherSearchExist.as_view(),name='teacher-search-exist'),
 	path('teacher-add-post/',TeacherAddPost.as_view(),name='teacher-add-post'),
-	#path('teacher-edit-post/',TeacherEditPost.as_view(),name='teacher-edit-post'),
+	path('teacher-edit-post/',TeacherEditPost.as_view(),name='teacher-edit-post'),
 	#path('teacher-notification/',TeacherNotification.as_view(),name='teacher-notification'),
 	# path('future-unfollow-by-teacher/<int:id1>/<int:id2>/',future_unfollow_by_teacher,name='future-unfollow-by-teacher'),
 

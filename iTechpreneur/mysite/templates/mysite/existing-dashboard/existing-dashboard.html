@@ -48,28 +48,35 @@
         {% endfor %}
 
         {% endif %}
+        {% if user %}
+        {% for l in user %}
         <form method="POST" id= 'post-form'>
           {% csrf_token %}
           <div class="comment-block">
             <img class="img-circle" src="{% static 'mysite/images/avatar.png' %}">
             <input type="text" name="post_id" id="post_id" value="{{i.post_id}}" hidden>
-            <input type="text" name="user_id" id="user_id" value="{{i.user_id}}" hidden>
-            <span class="username"><a href="#">{{ i.user_name }}</a>
+            <input type="text" name="user_id" id="l.user_id" value="{{l.user_id}}" hidden>
+            <span class="username"><a href="#">{{ l.user_first_name }}</a>
               <input type="text" name="comment_text" id="comment_text" class="comment-text form-control col-md-8" placeholder="Write a comment...">
                 
             <span></span>
           </div>
         </form>
+        {% endfor %}
+        {% endif %}
+
       </div>
     
 
   </div>
+  </div>
   {% endfor %}
+  </div>
   {% else %}
   <p>No Posts Right Now.</p>
   {% endif %}
-
 </div>
+
 <script>
 $(function(){
   $('form').keyup(function(e){
@@ -82,11 +89,9 @@ $(function(){
       post_id.trim();
       user_id.trim();
       comment.trim();
+      if(comment !=""){
       var theForm = $(this);
-      alert("post id: " + post_id);
-      alert("user id: " + user_id);
-      alert("comment: " + comment);
-    
+      
       $.ajax({
         type: 'POST',
         url: '{% url "mysite:existing-dashboard" %}',
@@ -98,8 +103,9 @@ $(function(){
             
         ,
         success: function(){
-          alert("comment stored");
+          
           $(this).find('input').eq(3).val("");
+          window.location.reload()
           return false;
         },
         error: function(xhr, errmsg, err){
@@ -107,6 +113,7 @@ $(function(){
         }
 
       });
+    }
      
     }
   });

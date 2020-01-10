@@ -53,8 +53,7 @@ $('#email').keypress(function( e ) {
 
 
 $(document).on('click','#future_student_sign_up_btn',function(e){
- console.log("Hello !!")  
- alert("hello")
+ 
   var first_name = $('#first_name').val();
   var surname = $('#surname').val();
   var email = $('#email').val();
@@ -130,7 +129,7 @@ if(surname.length == 0)
    if (surname.match(/^[a-zA-Z\s]+$/))
      {
        surname = surname.replace(/  +/g, ' '); 
-       console.log('name done.')
+      
        $("#surname_error").text('');
        // alert('valid');  
      }
@@ -154,7 +153,7 @@ if(surname.length == 0)
   }
   if(surname.length > 0 && surname.length <= 25)
   {
-    console.log('name done.')
+    
     $("#surname_error").text('');
   }
 
@@ -171,7 +170,7 @@ if(surname.length == 0)
   {
     if(validateEmail(email))
     {
-      console.log('valid email');
+      
       $("#email_error").text('');
     }
     else
@@ -228,7 +227,7 @@ $("#country_error").text('');
   
   if(password.length > 8)
   {
-    console.log('pass done.')
+    
   }
   else
   {
@@ -238,7 +237,7 @@ $("#country_error").text('');
     return false;    
   }
 
-  console.log("before ajax")
+  
   $.ajax({
     url: '/graduate_registration/',
     type: "POST",
@@ -250,7 +249,7 @@ $("#country_error").text('');
         
      if(response == '1')
       {
-        alert(response)
+        
         console.log(response);
         $('#future_student_sign_up_btn').removeClass("active");
         $('#future_student_sign_up_btn').addClass("btn-yellow");

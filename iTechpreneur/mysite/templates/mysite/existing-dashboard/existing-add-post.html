@@ -45,53 +45,43 @@
                           </div>
                   </div>
                 </div>
-                {% if teacher_post %}
-                <div class="page-sb-title">
-                  <h1 class="hdg">Post's Added</h1>
-                </div>
-                {% endif %}
-
-                <div class="post-box">
-                  <div class="table-program">
-                      <div class="table-responsive">
-                      {% if teacher_post %}
-                        <table class="table table-bordered fixed-th">
-                          <thead>
-                            <tr>
-                              <th>Post Title</th>
-                              <th>Description</th>
-                              <th>Action</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                          {% for i in teacher_post %}
-                            <tr>
-                              <td>{{ i.title }}</td>
-                              <td>{{ i.description  }}</td>
-                              <td>
-                                   <button type="button" class="btn btn-sm-dark">Delete</button>
-                                   <button type="button" class="btn btn-sm-dark2">Edit</button>
-                              </td>
-                            </tr>
-                            {% endfor %}
-                          </tbody>
-                        </table>
-                        {% endif %}
-                      </div>
-                  </div>
-                </div>
+                
+              
 
             </div>
 
           </div>
         </div>
 
+<style>
 
+  #existing_add_post_btn{
+    transition:all ease 0.5s;
+  }
+  .active{
+    font-size: 0;
+    width: 50px;
+    height: 50px;
+    border: 3px solid yellow;
+    border-radius: 50%;
+    background-color: transparent;
+    border-left-color: transparent;
+    animation: rotate 1.4s ease 0.5s infinite;
+  }
+ 
+  @keyframes rotate{
+    0%{
+      transform: rotate(360deg);
+    }
+  }
+</style>
 
   <script type="text/javascript">
   $("#existing-post-submit").submit(function(e){
         e.preventDefault();
         console.log('dddd')
+        $('#existing_add_post_btn').addClass("active");
+        $('#existing_add_post_btn').removeClass("btn-yellow");
         if($('#post_title').val())
         {
           $('#post_title').removeClass('error_message')
@@ -99,6 +89,8 @@
         else
         {
           $('#post_title').addClass('error_message')
+          $('#existing_add_post_btn').addClass("btn-yellow");
+          $('#existing_add_post_btn').removeClass("active");
           return false;
         }
 
@@ -109,6 +101,8 @@
         else
         {
           $('#post_text').addClass('error_message')
+          $('#existing_add_post_btn').addClass("btn-yellow");
+          $('#existing_add_post_btn').removeClass("active");
           return false;
         }
 
@@ -119,11 +113,15 @@
         else
         {
          $("#upload_file_error").text('Please upload a file.');
-          document.getElementById("upload_file_error").style.color = "red";   
+          document.getElementById("upload_file_error").style.color = "red"; 
+          $('#existing_add_post_btn').addClass("btn-yellow");
+          $('#existing_add_post_btn').removeClass("active");  
           return false;
         }
 
         $('#existing-post-submit')[0].submit();
+        $('#existing_add_post_btn').addClass("btn-yellow");
+        $('#existing_add_post_btn').removeClass("active");
     });
 </script>
 <script type="text/javascript">

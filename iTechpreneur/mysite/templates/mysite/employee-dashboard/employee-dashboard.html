@@ -36,9 +36,7 @@
         {% for j in comments%}
         {% ifequal i.post_id j.post_id %}
        
-        
-        
-        <div class="comment-block">
+        <div class="comment-block"> 
           <img class="img-circle" src="{% static 'mysite/images/avatar.png' %}">
           <span class="username"><a href="#">{{ j.commenter_first_name }}
               {{j.commenter_sur_name}}</a></span>
@@ -48,22 +46,26 @@
         {% endfor %}
 
         {% endif %}
+        {% if user %}
+        {% for l in user %}
         <form method="POST" id= 'post-form'>
           {% csrf_token %}
           <div class="comment-block">
             <img class="img-circle" src="{% static 'mysite/images/avatar.png' %}">
             <input type="text" name="post_id" id="post_id" value="{{i.post_id}}" hidden>
-            <input type="text" name="user_id" id="user_id" value="{{i.user_id}}" hidden>
-            <span class="username"><a href="#">{{ i.user_name }}</a>
+            <input type="text" name="user_id" id="user_id" value="{{l.user_id}}" hidden>
+            <span class="username"><a href="#">{{ l.user_first_name }}</a>
               <input type="text" name="comment_text" id="comment_text" class="comment-text form-control col-md-8" placeholder="Write a comment...">
                 
             <span></span>
           </div>
         </form>
+        {% endfor %}
+        {% endif %}
       </div>
     </div>
 
- 
+  </div>
   {% endfor %}
   {% else %}
   <p>No Posts Right Now.</p>
@@ -82,28 +84,24 @@ $(function(){
       post_id.trim();
       user_id.trim();
       comment.trim();
-      alert("post id" + post_id);
-      alert("comment " + comment);
-      alert("user id" + user_id);
-      $.ajax({
-        type: 'POST',
-        url: '{% url "mysite:employee-dashboard" %}',
-        data: {
-            'user_id': user_id,
-            'comment_text': comment_text,
-            'post_id': post_id,
+      if(comment !=""){
+        var theForm = $(this);
+        $.ajax({
+          type: 'POST',
+          url: '{% url "mysite:employee-dashboard" %}',
+          data: $(theForm).serialize(),
+          success: function(){
             
-           
-        },
-        success: function(){
-          alert("comment stored");
-        },
-        error: function(xhr, errmsg, err){
-          console.log(xhr.status + ": " + xhr.responseText);
-        }
+            $(this).find('input').eq(3).val("");
+            window.location.reload()
+            return false;
+          },
+          error: function(xhr, errmsg, err){
+            console.log(xhr.status + ": " + xhr.responseText);
+          }
 
-      });
-
+        });
+      }
     }
   });
 });
